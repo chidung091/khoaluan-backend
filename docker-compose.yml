@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  point-training-system:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${BACK_CONTAINER_NAME}
+    ports:
+      - ${PORT}:3003
+    volumes:
+      - service:/payment
+    depends_on:
+      - mysql
+    networks:
+      - point-training-network
+  mysql:
+    platform: linux/x86_64
+    container_name: ${MYSQL_CONTAINER_NAME}
+    image: mysql:5.7
+    command: --max_allowed_packet=32505856 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci     # Set max_allowed_packet to 256M (or any other value)
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - ${MYSQL_PORT}:3306
+    volumes:
+      - db-data-order:/data/db
+    networks:
+      - point-training-network
+volumes:
+  db-data-order:
+  service:
+networks:
+  point-training-network:
+    name: ${NETWORK_NAME}

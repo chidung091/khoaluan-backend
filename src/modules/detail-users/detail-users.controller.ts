@@ -26,7 +26,7 @@ export class DetailUsersController {
   @ApiOperation({ summary: 'Get users info' })
   @ApiResponse({ status: 201, description: 'Success', type: CreateUsersDto })
   async create(@Req() req) {
-    return await this.detailUsersService.findById(req.user.id)
+    return await this.detailUsersService.findById(req.user.userID)
   }
 
   @Put('/update')
@@ -35,6 +35,6 @@ export class DetailUsersController {
   @ApiOperation({ summary: 'Get users info' })
   @ApiResponse({ status: 201, description: 'Success', type: CreateUsersDto })
   async updateDetailUser(@Req() req, @Body() dto: CreateDetailUsersDto) {
-    return await this.detailUsersService.update(req.user.id, dto)
+    return await this.detailUsersService.update(req.user.userID, dto)
   }
 }

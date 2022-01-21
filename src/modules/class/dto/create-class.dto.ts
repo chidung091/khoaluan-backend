@@ -19,7 +19,7 @@ export class CreateClassDto {
   classCourseCourseId: number
 
   @ApiProperty()
-  @IsArray({ notEmpty: true })
+  @IsArray({ notEmpty: true, nestedType: Number })
   studentsIds: [number]
 
   @ApiProperty()

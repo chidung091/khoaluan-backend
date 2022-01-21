@@ -38,7 +38,7 @@ export class UsersController {
   @ApiResponse({ status: 201, description: 'Success', type: CreateUsersDto })
   async changePassword(@Req() req, @Body() dto: ChangePasswordDto) {
     return await this.usersService.changePassword(
-      req.user.id,
+      req.user.userID,
       dto.oldPassword,
       dto.newPassword,
     )
@@ -49,6 +49,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Đổi pass tài khoản' })
   async checkUID(@Req() req) {
-    return req.user.id
+    return req.user.userID
   }
 }

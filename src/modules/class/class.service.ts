@@ -21,7 +21,6 @@ export class ClassService {
   ) {}
 
   public async createClass(dto: CreateClassDto) {
-    console.log(RATING_SERVICE_CREATE_CLASSS)
     const studentWh: IStudents = {
       semester: 1,
       studentsIds: dto.studentsIds,
@@ -33,15 +32,15 @@ export class ClassService {
       students: [studentWh],
     }
     const createClassWebhook = await firstValueFrom(
-      this.httpService.post<CreateClassDto>(
+      this.httpService.post<ICreateClassWebhook>(
         `${RATING_SERVICE_CREATE_CLASSS}`,
         classWh,
         { headers: { 'api-key': API_KEY } },
       ),
     )
-    const createClass = await this.classRepository.save(dto)
-    console.log(createClassWebhook)
-    console.log(createClass)
+    // const createClass = await this.classRepository.save(dto)
+    const responseData: ICreateClassWebhook = createClassWebhook.data
+    console.log(responseData.students)
     return 'true'
   }
 }

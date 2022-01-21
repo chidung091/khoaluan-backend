@@ -1,7 +1,6 @@
 import { Role } from 'src/modules/users/users.enum'
 
-export interface TokenPayload {
-  userId: number
+export interface UserAuth {
+  id: number
   role: Role
-  name: string
 }

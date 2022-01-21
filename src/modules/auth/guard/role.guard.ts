@@ -15,9 +15,10 @@ const RoleGuard = (role: Role): Type<CanActivate> => {
 
     async canActivate(context: ExecutionContext) {
       const request = context.switchToHttp().getRequest<RequestWithUser>()
+      console.log(request.user.userID)
       const user = {
         ...request.user,
-        role: await this.usersService.getRole(request.user.email),
+        role: await this.usersService.getRole(request.user.userID),
       }
       return user?.role.includes(role)
     }

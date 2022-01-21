@@ -62,7 +62,7 @@ export class UsersService {
     return users
   }
 
-  public async getRole(id: string) {
+  public async getRole(id: number) {
     const user = await this.usersRepository.findOne(id)
     if (user) {
       return user.role

@@ -22,3 +22,4 @@ export const EMAIL_NAME = process.env.EMAIL_NAME
 export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD
 
 export const RATING_SERVICE = getEnv('RATING_SERVICE')
+export const API_KEY = getEnv('API_KEY')

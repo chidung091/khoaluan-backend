@@ -86,8 +86,8 @@ export class AuthService {
       return role
     }
   }
-  public getJWTToken(id: number, role: Role, name: string) {
-    const payload: TokenPayload = { id, role, name }
+  public getJWTToken(userId: number, role: Role, name: string) {
+    const payload: TokenPayload = { userId, role, name }
     return this.jwtService.sign(payload)
   }
 }

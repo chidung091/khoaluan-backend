@@ -6,7 +6,7 @@ export class ResponseAuthDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  id: number
+  userId: number
 
   @ApiProperty()
   @IsNotEmpty()

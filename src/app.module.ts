@@ -20,6 +20,7 @@ import { DepartmentModule } from './modules/department/department.module'
 import { CourseModule } from './modules/course/course.module'
 import { ClassModule } from './modules/class/class.module'
 import { TeachersModule } from './modules/teachers/teachers.module'
+import { WebhookModule } from './modules/webhook/webhook.module'
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { TeachersModule } from './modules/teachers/teachers.module'
     CourseModule,
     ClassModule,
     TeachersModule,
+    WebhookModule,
   ],
   controllers: [AppController],
   providers: [AppService],

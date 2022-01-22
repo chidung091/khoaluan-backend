@@ -10,12 +10,23 @@ export interface IStudents {
   startYear: number
   endYear: number
   headMasterId: number
+  monitorId: number
 }
 
 export interface IClassIds {
   classIds: Array<number>
 }
 
+export interface IMonitorId {
+  monitorId: number
+}
+
+export interface ITeacher {
+  headMasterId: number
+  startYear: number
+  semester: number
+  endYear: number
+}
 export interface IClassId {
   classId: number
 }

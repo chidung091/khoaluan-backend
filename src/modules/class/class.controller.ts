@@ -45,6 +45,24 @@ export class ClassController {
     return await this.classService.findAllClassByDepartmemt(req.user.userID)
   }
 
+  @Get('/monitor')
+  @UseGuards(RoleGuard(Role.Monitor))
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: CLASS_BY_DEPARTMENT })
+  @ApiOkResponse({ type: ClassResponseDepartmentDto })
+  async getMonitor(@Req() req) {
+    return await this.classService.findAllClassByMonitor(req.user.userID)
+  }
+
+  @Get('/head-master')
+  @UseGuards(RoleGuard(Role.Teacher))
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: CLASS_BY_DEPARTMENT })
+  @ApiOkResponse({ type: ClassResponseDepartmentDto })
+  async getHeadMaster(@Req() req) {
+    return await this.classService.findAllClassByHeadMaster(req.user.userID)
+  }
+
   @Get('/:id')
   @UseGuards(RoleGuard(Role.Department))
   @UseGuards(JwtAuthGuard)

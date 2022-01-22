@@ -21,6 +21,9 @@
       "EXPIRY": "Expiry account"
     }
   },
+  "BACKEND": {
+    "CLASS_BY_DEPARTMENT": "API quản lí danh sách lớp của giáo vụ khoa"
+  },
   "RESPONSE": {
     "GET_REQUEST_OK": "GET OK",
     "POST_REQUEST_OK": "POST OK",

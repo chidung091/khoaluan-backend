@@ -5,10 +5,12 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
+import { CLASS_BY_DEPARTMENT } from 'src/config/constants'
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard'
 import RoleGuard from '../auth/guard/role.guard'
 import { Role } from '../users/users.enum'
 import { ClassService } from './class.service'
+import { ClassResponseDepartmentDto } from './dto/class-response-department.dto'
 import { CreateClassDto } from './dto/create-class.dto'
 
 @ApiBearerAuth()
@@ -29,6 +31,8 @@ export class ClassController {
   @Get()
   @UseGuards(RoleGuard(Role.Department))
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: CLASS_BY_DEPARTMENT })
+  @ApiOkResponse({ type: ClassResponseDepartmentDto })
   async get(@Req() req) {
     return await this.classService.findAllClassByDepartmemt(req.user.userID)
   }

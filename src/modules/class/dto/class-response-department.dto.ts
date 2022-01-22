@@ -11,6 +11,10 @@ export class ClassResponseDepartmentDto {
   className: string
 
   @ApiProperty()
+  @IsString({ notEmpty: true })
+  classId: number
+
+  @ApiProperty()
   @IsNumber({ notEmpty: true })
   count: number
 

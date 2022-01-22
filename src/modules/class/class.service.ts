@@ -104,6 +104,7 @@ export class ClassService {
           const data: ClassResponseDepartmentDto = {
             courseName: (await this.courseService.findName(arrayItem.courseId))
               .courseName,
+            classId: arrayItem.classId,
             className: await this.findName(arrayItem.classId),
             count: student.studentsIds.length,
             headMasterName: await this.teachersService.findName(

@@ -10,13 +10,16 @@ import {
   RATING_SERVICE_CREATE_CLASSS,
   RATING_SERVICE_GET_CLASS,
   RATING_SERVICE_GET_CLASS_DETAIL,
+  RATING_SERVICE_GET_CLASS_HEADMASTER,
 } from 'src/config/end-point'
 import {
   IClassId,
   IClassIds,
   IClassResponse,
   ICreateClassWebhook,
+  IMonitorId,
   IStudents,
+  ITeacher,
 } from './interface/create-class-webhook.interface'
 import { DepartmentService } from '../department/department.service'
 import { ClassResponseDepartmentDto } from './dto/class-response-department.dto'
@@ -57,6 +60,7 @@ export class ClassService {
       startYear: 2018,
       endYear: 2019,
       headMasterId: dto.headMasterId,
+      monitorId: 675105036,
     }
     const classWh: ICreateClassWebhook = {
       classId: dto.classId,
@@ -128,6 +132,9 @@ export class ClassService {
 
   public async findDetailClass(id: number) {
     const data = await this.classRepository.findOne(id)
+    if (!data) {
+      throw new NotFoundException('NOT_FOUND_CLASS')
+    }
     const classIdWh: IClassId = {
       classId: id,
     }
@@ -157,5 +164,40 @@ export class ClassService {
       }),
     )
     return classReponse
+  }
+
+  public async findAllClassByMonitor(id: number) {
+    console.log(id)
+    const classIdWh: IMonitorId = {
+      monitorId: id,
+    }
+    const classWh = await firstValueFrom(
+      this.httpService.post<IClassResponse[]>(
+        `${RATING_SERVICE_GET_CLASS}`,
+        classIdWh,
+        {
+          headers: { 'api-key': API_KEY },
+        },
+      ),
+    )
+  }
+
+  public async findAllClassByHeadMaster(id: number) {
+    const classIdWh: ITeacher = {
+      headMasterId: id,
+      startYear: 2018,
+      endYear: 2019,
+      semester: 1,
+    }
+    const classWh = await firstValueFrom(
+      this.httpService.post<IClassResponse[]>(
+        `${RATING_SERVICE_GET_CLASS_HEADMASTER}`,
+        classIdWh,
+        {
+          headers: { 'api-key': API_KEY },
+        },
+      ),
+    )
+    return classWh.data
   }
 }

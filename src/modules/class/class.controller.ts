@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -35,5 +43,12 @@ export class ClassController {
   @ApiOkResponse({ type: ClassResponseDepartmentDto })
   async get(@Req() req) {
     return await this.classService.findAllClassByDepartmemt(req.user.userID)
+  }
+
+  @Get('/:id')
+  @UseGuards(RoleGuard(Role.Department))
+  @UseGuards(JwtAuthGuard)
+  async getDetail(@Param('id') id: number) {
+    return await this.classService.findDetailClass(id)
   }
 }

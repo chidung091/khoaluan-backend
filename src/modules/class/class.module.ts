@@ -5,9 +5,19 @@ import { Class } from './entity/class.entity'
 import { ClassController } from './class.controller'
 import { HttpModule } from '@nestjs/axios'
 import { UsersModule } from '../users/users.module'
+import { DepartmentModule } from '../department/department.module'
+import { CourseModule } from '../course/course.module'
+import { TeachersModule } from '../teachers/teachers.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Class]), HttpModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Class]),
+    HttpModule,
+    UsersModule,
+    DepartmentModule,
+    CourseModule,
+    TeachersModule,
+  ],
   providers: [ClassService],
   controllers: [ClassController],
 })

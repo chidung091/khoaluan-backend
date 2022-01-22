@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Course } from './entity/course.entity'
@@ -12,5 +12,13 @@ export class CourseService {
 
   public async findAll() {
     return this.courseRepository.find()
+  }
+
+  public async findName(id: number) {
+    const data = await this.courseRepository.findOne({ courseId: id })
+    if (!data) {
+      throw new NotFoundException('NOT_FOUND_COURSE')
+    }
+    return data
   }
 }

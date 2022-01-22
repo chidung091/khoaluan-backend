@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Teachers } from './entity/teachers.entity'
@@ -16,5 +16,13 @@ export class TeachersService {
       .leftJoinAndSelect('teachers.teacherUsers', 'userID')
       .where('teachers.teacherUsersUserID = :id', { id: id })
       .getOne()
+  }
+
+  public async findName(id: number) {
+    const data = await this.findById(id)
+    if (!data) {
+      throw new NotFoundException('NOT_FOUND_TEACHERS')
+    }
+    return data.teacherName
   }
 }

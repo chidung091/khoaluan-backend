@@ -22,6 +22,18 @@ export class DepartmentService {
     return this.departmentRepository.find()
   }
 
+  private async findById(id: number): Promise<Department> {
+    return this.departmentRepository
+      .createQueryBuilder('department')
+      .leftJoinAndSelect('department.departmentAdmin', 'userID')
+      .where('department.departmentAdminUserID = :id', { id: id })
+      .getOne()
+  }
+
+  public async findDepartment(id: number) {
+    return this.findById(id)
+  }
+
   public async create(dto: CreateDepartmentDto): Promise<Department> {
     const user = await this.userService.getById(dto.departmentAdminUserID)
     if (!user) {

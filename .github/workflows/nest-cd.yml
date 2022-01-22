@@ -34,5 +34,6 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd ~/khoaluan-backend
+            sudo docker system prune
             sudo git pull origin master
             sudo yarn start:up:prod

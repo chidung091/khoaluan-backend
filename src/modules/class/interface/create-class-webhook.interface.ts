@@ -16,6 +16,10 @@ export interface IClassIds {
   classIds: Array<number>
 }
 
+export interface IClassId {
+  classId: number
+}
+
 export interface IClassResponse {
   id: number
   createdAt: Date

@@ -9,8 +9,10 @@ import { API_KEY } from 'src/config/secrets'
 import {
   RATING_SERVICE_CREATE_CLASSS,
   RATING_SERVICE_GET_CLASS,
+  RATING_SERVICE_GET_CLASS_DETAIL,
 } from 'src/config/end-point'
 import {
+  IClassId,
   IClassIds,
   IClassResponse,
   ICreateClassWebhook,
@@ -20,6 +22,7 @@ import { DepartmentService } from '../department/department.service'
 import { ClassResponseDepartmentDto } from './dto/class-response-department.dto'
 import { CourseService } from '../course/course.service'
 import { TeachersService } from '../teachers/teachers.service'
+import { ClassDetailResponseDepartmentDto } from './dto/class-detail-response-department.dto'
 
 @Injectable()
 export class ClassService {
@@ -121,5 +124,38 @@ export class ClassService {
       return classReponsee
     }
     return new NotFoundException('Error')
+  }
+
+  public async findDetailClass(id: number) {
+    const data = await this.classRepository.findOne(id)
+    const classIdWh: IClassId = {
+      classId: id,
+    }
+    const classWh = await firstValueFrom(
+      this.httpService.post<IClassResponse>(
+        `${RATING_SERVICE_GET_CLASS_DETAIL}`,
+        classIdWh,
+        {
+          headers: { 'api-key': API_KEY },
+        },
+      ),
+    )
+    const students = classWh.data.students
+    const classReponse: ClassDetailResponseDepartmentDto[] = []
+    await Promise.all(
+      students.map(async (arrayItem) => {
+        const response: ClassDetailResponseDepartmentDto = {
+          count: arrayItem.studentsIds.length,
+          headMasterName: await this.teachersService.findName(
+            arrayItem.headMasterId,
+          ),
+          startYear: arrayItem.startYear,
+          endYear: arrayItem.endYear,
+          semester: arrayItem.semester,
+        }
+        classReponse.push(response)
+      }),
+    )
+    return classReponse
   }
 }

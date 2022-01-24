@@ -31,7 +31,8 @@ export class DepartmentService {
   }
 
   public async findDepartment(id: number) {
-    return this.findById(id)
+    const data = await this.findById(id)
+    return data
   }
 
   public async create(dto: CreateDepartmentDto): Promise<Department> {

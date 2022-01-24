@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
@@ -24,6 +26,7 @@ export class UsersService {
     @InjectRepository(ResetPassword)
     private resetPasswordRepository: Repository<ResetPassword>,
     private mailService: MailService,
+    @Inject(forwardRef(() => DetailUsersService))
     private detailUsersService: DetailUsersService,
   ) {}
 

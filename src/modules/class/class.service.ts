@@ -26,6 +26,7 @@ import { ClassResponseDepartmentDto } from './dto/class-response-department.dto'
 import { CourseService } from '../course/course.service'
 import { TeachersService } from '../teachers/teachers.service'
 import { ClassDetailResponseDepartmentDto } from './dto/class-detail-response-department.dto'
+import { ClassResponseHeadMasterDto } from './dto/class-response-headmaster.dto'
 
 @Injectable()
 export class ClassService {
@@ -47,7 +48,7 @@ export class ClassService {
   }
 
   private async findName(id: number) {
-    const data = await this.classRepository.findOne({ classId: id })
+    const data = await this.classRepository.findOne(id)
     if (!data) {
       throw new NotFoundException('NOT_FOUND_CLASS')
     }
@@ -74,7 +75,7 @@ export class ClassService {
         { headers: { 'api-key': API_KEY } },
       ),
     )
-    const createClass = await this.classRepository.save(dto)
+    await this.classRepository.save(dto)
     const responseData: ICreateClassWebhook = createClassWebhook.data
     console.log(responseData.students)
     return 'true'
@@ -180,6 +181,7 @@ export class ClassService {
         },
       ),
     )
+    return classWh.data
   }
 
   public async findAllClassByHeadMaster(id: number) {
@@ -190,7 +192,7 @@ export class ClassService {
       semester: 1,
     }
     const classWh = await firstValueFrom(
-      this.httpService.post<IClassResponse[]>(
+      this.httpService.post<[number]>(
         `${RATING_SERVICE_GET_CLASS_HEADMASTER}`,
         classIdWh,
         {
@@ -198,6 +200,16 @@ export class ClassService {
         },
       ),
     )
-    return classWh.data
+    const dataResponse: ClassResponseHeadMasterDto[] = []
+    await Promise.all(
+      classWh.data.map(async (arrayItem) => {
+        const dataRes: ClassResponseHeadMasterDto = {
+          className: await this.findName(arrayItem),
+          classId: arrayItem,
+        }
+        dataResponse.push(dataRes)
+      }),
+    )
+    return dataResponse
   }
 }

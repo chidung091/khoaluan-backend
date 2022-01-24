@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Put, Req, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common'
 import {
   ApiOperation,
   ApiResponse,
@@ -39,6 +47,22 @@ export class DetailUsersController {
   })
   async listStudents(@Req() req) {
     return await this.detailUsersService.findAllClassByMonitor(req.user.userID)
+  }
+
+  @Get('/head-master/list-students/:id')
+  @UseGuards(RoleGuard(Role.Teacher))
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get list users by teacher' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    type: [DetailUsersMonitorResponseDto],
+  })
+  async listStudentsHeadMaster(@Param('id') classId: number, @Req() req) {
+    return await this.detailUsersService.findAllStudentByHeadMaster(
+      classId,
+      req.user.userID,
+    )
   }
 
   @Put('/update')

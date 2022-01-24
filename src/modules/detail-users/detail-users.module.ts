@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { DetailUsers } from './entity/detail-users.entity'
 import { HttpModule } from '@nestjs/axios'
 import { UsersModule } from '../users/users.module'
+import { ClassModule } from '../class/class.module'
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([DetailUsers]),
     HttpModule,
+    forwardRef(() => ClassModule),
     forwardRef(() => UsersModule),
   ],
   providers: [DetailUsersService],

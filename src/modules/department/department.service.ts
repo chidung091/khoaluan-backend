@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
@@ -15,6 +17,7 @@ export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private departmentRepository: Repository<Department>,
+    @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
   ) {}
 

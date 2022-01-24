@@ -2,10 +2,19 @@ import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { firstValueFrom } from 'rxjs'
-import { RATING_SERVICE_GET_LIST_STUDENTS_BY_MONITOR } from 'src/config/end-point'
+import {
+  RATING_SERVICE_GET_LIST_STUDENTS_BY_HEADMASTER,
+  RATING_SERVICE_GET_LIST_STUDENTS_BY_MONITOR,
+} from 'src/config/end-point'
 import { API_KEY } from 'src/config/secrets'
 import { Repository } from 'typeorm'
-import { IMonitor } from './detail-users.interface'
+import { ClassService } from '../class/class.service'
+import {
+  IHeadMaster,
+  IHeadMasterResponse,
+  IMonitor,
+} from './detail-users.interface'
+import { DetailUsersHeadMasterResponseDto } from './dto/detail-users-headmaster.response.dto'
 import { DetailUsersMonitorResponseDto } from './dto/detail-users-monitor.response.dto'
 import { CreateDetailUsersDto } from './dto/detail-users.dto'
 import { DetailUsers } from './entity/detail-users.entity'
@@ -16,6 +25,7 @@ export class DetailUsersService {
     @InjectRepository(DetailUsers)
     private detailUsersRepository: Repository<DetailUsers>,
     private httpService: HttpService,
+    private classService: ClassService,
   ) {}
 
   public async findById(id: number): Promise<DetailUsers> {
@@ -79,21 +89,33 @@ export class DetailUsersService {
   }
 
   public async findAllStudentByHeadMaster(classId: number, id: number) {
-    const classIdWh: IMonitor = {
-      monitorId: id,
+    const classIdWh: IHeadMaster = {
       startYear: 2018,
       endYear: 2019,
       semester: 1,
+      headMasterId: id,
+      classId: classId,
     }
     const classWh = await firstValueFrom(
-      this.httpService.post<[number]>(
-        `${RATING_SERVICE_GET_LIST_STUDENTS_BY_MONITOR}`,
+      this.httpService.post<IHeadMasterResponse[]>(
+        `${RATING_SERVICE_GET_LIST_STUDENTS_BY_HEADMASTER}`,
         classIdWh,
         {
           headers: { 'api-key': API_KEY },
         },
       ),
     )
-    return classWh.data
+    const dataResponse: DetailUsersMonitorResponseDto[] = []
+    await Promise.all(
+      classWh.data.map(async (arrayItem) => {
+        const dataRes: DetailUsersHeadMasterResponseDto = {
+          userID: arrayItem.id,
+          name: await (await this.findById(arrayItem.id)).name,
+          className: await this.classService.findName(arrayItem.classId),
+        }
+        dataResponse.push(dataRes)
+      }),
+    )
+    return dataResponse
   }
 }

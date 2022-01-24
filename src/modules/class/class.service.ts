@@ -47,7 +47,7 @@ export class ClassService {
       .getMany()
   }
 
-  private async findName(id: number) {
+  public async findName(id: number) {
     const data = await this.classRepository.findOne(id)
     if (!data) {
       throw new NotFoundException('NOT_FOUND_CLASS')

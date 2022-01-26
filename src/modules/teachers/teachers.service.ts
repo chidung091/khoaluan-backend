@@ -18,6 +18,11 @@ export class TeachersService {
       .getOne()
   }
 
+  public async countTeachers(id: number): Promise<number> {
+    const data = await this.findByDepartmentId(id)
+    return data.length
+  }
+
   public async findByDepartmentId(id: number): Promise<Teachers[]> {
     return this.teachersRepository
       .createQueryBuilder('teachers')

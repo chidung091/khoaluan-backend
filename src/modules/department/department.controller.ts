@@ -34,7 +34,7 @@ export class DepartmentController {
   @UseGuards(RoleGuard(Role.Department))
   @UseGuards(JwtAuthGuard)
   async findListTeacher(@Req() req) {
-    return await this.departmentService.findDepartment(req.user.userID)
+    return await this.departmentService.findListTeachers(req.user.userID)
   }
 
   @Post()

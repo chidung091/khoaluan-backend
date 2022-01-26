@@ -16,7 +16,7 @@ import { TeachersModule } from '../teachers/teachers.module'
     forwardRef(() => UsersModule),
     forwardRef(() => DepartmentModule),
     CourseModule,
-    TeachersModule,
+    forwardRef(() => TeachersModule),
   ],
   providers: [ClassService],
   controllers: [ClassController],

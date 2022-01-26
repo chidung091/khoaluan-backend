@@ -7,10 +7,12 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
+import { ClassService } from '../class/class.service'
 import { TeachersService } from '../teachers/teachers.service'
 import { Role } from '../users/users.enum'
 import { UsersService } from '../users/users.service'
 import { CreateDepartmentDto } from './dto/create-department.dto'
+import { ResponseDepartmentDto } from './dto/response.dto'
 import { Department } from './entity/department.entity'
 
 @Injectable()
@@ -21,10 +23,34 @@ export class DepartmentService {
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     private teachersService: TeachersService,
+    @Inject(forwardRef(() => ClassService))
+    private classService: ClassService,
   ) {}
 
   public async findAll() {
-    return this.departmentRepository.find()
+    const data = await this.departmentRepository.find()
+    const dataRes: ResponseDepartmentDto[] = []
+    await Promise.all(
+      data.map(async (arrayItem) => {
+        const data = await this.classService.getDataforDepartmentCount(
+          arrayItem.departmentId,
+        )
+        const countTeacher = await this.teachersService.countTeachers(
+          arrayItem.departmentId,
+        )
+        const dataObj = {
+          departmentId: arrayItem.departmentId,
+          departmentName: arrayItem.departmentName,
+          information: arrayItem.information,
+          departmentAdminUserId: arrayItem.departmentAdminUserID,
+          countStudent: data.countStudents,
+          countClasses: data.countClasses,
+          countTeachers: countTeacher,
+        }
+        dataRes.push(dataObj)
+      }),
+    )
+    return dataRes
   }
 
   public async findListTeachers(id: number) {

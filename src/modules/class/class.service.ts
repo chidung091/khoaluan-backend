@@ -17,6 +17,7 @@ import {
   IClassIds,
   IClassResponse,
   ICreateClassWebhook,
+  IDepartmentResponse,
   IMonitorId,
   IStudents,
   ITeacher,
@@ -210,6 +211,48 @@ export class ClassService {
         dataResponse.push(dataRes)
       }),
     )
+    return dataResponse
+  }
+
+  public async getDataforDepartmentCount(
+    id: number,
+  ): Promise<IDepartmentResponse> {
+    const data = await this.findById(id)
+    const dataResponse: IDepartmentResponse = {
+      countClasses: 0,
+      countStudents: 0,
+    }
+    const classIdsWh = []
+    data.forEach(function (arrayItem) {
+      classIdsWh.push(arrayItem.classId)
+    })
+    if (classIdsWh.length > 0) {
+      const classIdWh: IClassIds = {
+        classIds: classIdsWh,
+      }
+      const classWh = await firstValueFrom(
+        this.httpService.post<IClassResponse[]>(
+          `${RATING_SERVICE_GET_CLASS}`,
+          classIdWh,
+          {
+            headers: { 'api-key': API_KEY },
+          },
+        ),
+      )
+      const classReponse: IClassResponse[] = classWh.data
+      await Promise.all(
+        classReponse.map(async (arrayItem) => {
+          const students: IStudents[] = arrayItem.students
+          const student = students.find((student) => {
+            return student.startYear === 2018 && student.endYear === 2019
+          })
+          if (arrayItem.classId) {
+            dataResponse.countClasses += 1
+            dataResponse.countStudents += student.studentsIds.length
+          }
+        }),
+      )
+    }
     return dataResponse
   }
 }

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
 import { BaseDto } from 'src/common/dto'
 
-export class ResponseDepartmentDto extends BaseDto {
+export class ResponseDepartmentDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
@@ -22,4 +22,16 @@ export class ResponseDepartmentDto extends BaseDto {
   @IsNotEmpty()
   @IsNumber()
   departmentAdminUserId: number
+
+  @ApiProperty()
+  @IsNumber()
+  countStudent: number
+
+  @ApiProperty()
+  @IsNumber()
+  countClasses: number
+
+  @ApiProperty()
+  @IsNumber()
+  countTeachers: number
 }

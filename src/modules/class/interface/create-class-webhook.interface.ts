@@ -39,3 +39,8 @@ export interface IClassResponse {
   courseId: number
   students: IStudents[]
 }
+
+export interface IDepartmentResponse {
+  countClasses: number
+  countStudents: number
+}

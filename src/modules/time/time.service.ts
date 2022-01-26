@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { CreateTimeDto } from './dto/create-time.dto'
@@ -18,7 +14,11 @@ export class TimeService {
   ) {}
 
   public async create(time: CreateTimeDto) {
-    return this.timeRepository.save(time)
+    const timeCreate = {
+      ...time,
+      status: Status.Inactive,
+    }
+    return this.timeRepository.save(timeCreate)
   }
 
   public async findById(id: number): Promise<Time> {
@@ -28,11 +28,22 @@ export class TimeService {
     return this.timeRepository.find()
   }
 
+  public async changeToInactive(id: number) {
+    const existing = await this.timeRepository.findOne(id)
+    const timeUpdate = existing
+    timeUpdate.status = Status.Inactive
+    return this.timeRepository.save({
+      ...existing,
+      ...timeUpdate,
+    })
+  }
   public async changeStatus(id: number): Promise<Time> {
     const findActive = await this.timeRepository.find({ status: Status.Active })
     if (findActive) {
-      throw new BadRequestException(
-        'Please inactive the time have active status to continue',
+      await Promise.all(
+        findActive.map(async (arrayItem) => {
+          await this.changeToInactive(arrayItem.id)
+        }),
       )
     }
     const existing = await this.timeRepository.findOne(id)

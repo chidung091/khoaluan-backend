@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { IsDate, IsNumber } from 'class-validator'
-import { IsEnum } from 'src/decorators/validators'
-import { Status } from '../time.enum'
 
 export class CreateTimeDto {
   @ApiProperty()
@@ -60,8 +58,4 @@ export class CreateTimeDto {
   @IsDate()
   @Type(() => Date)
   endTimeDepartment: Date
-
-  @ApiProperty()
-  @IsEnum({ entity: Status, defaultValue: Status.Inactive })
-  status: Status
 }

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { CreateTimeDto } from './dto/create-time.dto'
 import { TimeDto } from './dto/time.dto'
+import { UpdateTimeDto } from './dto/update-time.dto'
 import { Time } from './time.entity'
 import { Status } from './time.enum'
 
@@ -65,7 +66,7 @@ export class TimeService {
     })
   }
 
-  public async update(id: number, time: TimeDto): Promise<Time> {
+  public async update(id: number, time: UpdateTimeDto): Promise<Time> {
     const existing = await this.timeRepository.findOne({ id: id })
     const timeUpdate = {
       ...time,

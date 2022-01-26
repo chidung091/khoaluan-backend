@@ -18,6 +18,14 @@ export class TeachersService {
       .getOne()
   }
 
+  public async findByDepartmentId(id: number): Promise<Teachers[]> {
+    return this.teachersRepository
+      .createQueryBuilder('teachers')
+      .leftJoinAndSelect('teachers.teacherDepartment', 'departmentId')
+      .where('teachers.teacherDepartmentDepartmentId = :id', { id: id })
+      .getMany()
+  }
+
   public async findName(id: number) {
     const data = await this.findById(id)
     if (!data) {

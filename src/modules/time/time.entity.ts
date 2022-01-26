@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm'
+import { Status } from './time.enum'
 
 @Entity()
 export class Time {
@@ -6,20 +13,51 @@ export class Time {
   id: number
 
   @Column()
-  namHoc: string
+  startYear: number
 
   @Column()
-  maHK: number
+  endYear: number
 
   @Column()
-  tgSV: string
+  semester: number
 
   @Column()
-  tgLT: string
+  startTimeStudent: Date
 
   @Column()
-  tgGV: string
+  endTimeStudent: Date
 
   @Column()
-  tgK: string
+  startTimeMonitor: Date
+
+  @Column()
+  endTimeMonitor: Date
+
+  @Column()
+  startTimeHeadMaster: Date
+
+  @Column()
+  endTimeHeadMaster: Date
+
+  @Column()
+  startTimeDepartment: Date
+
+  @Column()
+  endTimeDepartment: Date
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: Date
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
+  updatedAt: Date
+
+  @Column({ type: 'enum', enum: Status, default: Status.Inactive })
+  status: Status
 }

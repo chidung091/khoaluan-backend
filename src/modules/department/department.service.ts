@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
+import { TeachersService } from '../teachers/teachers.service'
 import { Role } from '../users/users.enum'
 import { UsersService } from '../users/users.service'
 import { CreateDepartmentDto } from './dto/create-department.dto'
@@ -19,10 +20,19 @@ export class DepartmentService {
     private departmentRepository: Repository<Department>,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
+    private teachersService: TeachersService,
   ) {}
 
   public async findAll() {
     return this.departmentRepository.find()
+  }
+
+  public async findListTeachers(id: number) {
+    const data = await this.findById(id)
+    const dataResponse = await this.teachersService.findByDepartmentId(
+      data.departmentId,
+    )
+    return dataResponse
   }
 
   private async findById(id: number): Promise<Department> {

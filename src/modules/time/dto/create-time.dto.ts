@@ -1,34 +1,67 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { Type } from 'class-transformer'
+import { IsDate, IsNumber } from 'class-validator'
+import { IsEnum } from 'src/decorators/validators'
+import { Status } from '../time.enum'
 
 export class CreateTimeDto {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  namHoc: string
-
-  @ApiProperty()
-  @IsNotEmpty()
   @IsNumber()
-  maHK: number
+  id: number
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  tgSV: string
+  @IsNumber()
+  startYear: number
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  tgLT: string
+  @IsNumber()
+  endYear: number
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  tgGV: string
+  @IsNumber()
+  semester: number
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  tgK: string
+  @IsDate()
+  @Type(() => Date)
+  startTimeStudent: Date
+
+  @ApiProperty()
+  @IsDate()
+  @Type(() => Date)
+  endTimeStudent: Date
+
+  @ApiProperty()
+  @IsDate()
+  @Type(() => Date)
+  startTimeMonitor: Date
+
+  @ApiProperty()
+  @IsDate()
+  @Type(() => Date)
+  endTimeMonitor: Date
+
+  @ApiProperty()
+  @IsDate()
+  @Type(() => Date)
+  startTimeHeadMaster: Date
+
+  @ApiProperty()
+  @IsDate()
+  @Type(() => Date)
+  endTimeHeadMaster: Date
+
+  @ApiProperty()
+  @IsDate()
+  @Type(() => Date)
+  startTimeDepartment: Date
+
+  @ApiProperty()
+  @IsDate()
+  @Type(() => Date)
+  endTimeDepartment: Date
+
+  @ApiProperty()
+  @IsEnum({ entity: Status, defaultValue: Status.Inactive })
+  status: Status
 }

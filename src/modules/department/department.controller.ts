@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -6,6 +6,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard'
+import RoleGuard from '../auth/guard/role.guard'
+import { Role } from '../users/users.enum'
 import { DepartmentService } from './department.service'
 import { CreateDepartmentDto } from './dto/create-department.dto'
 import { ResponseDepartmentDto } from './dto/response.dto'
@@ -26,6 +28,13 @@ export class DepartmentController {
   })
   async find() {
     return await this.departmentService.findAll()
+  }
+
+  @Get('/list-teachers')
+  @UseGuards(RoleGuard(Role.Department))
+  @UseGuards(JwtAuthGuard)
+  async findListTeacher(@Req() req) {
+    return await this.departmentService.findDepartment(req.user.userID)
   }
 
   @Post()

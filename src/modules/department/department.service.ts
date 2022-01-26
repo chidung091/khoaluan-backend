@@ -38,11 +38,14 @@ export class DepartmentService {
         const countTeacher = await this.teachersService.countTeachers(
           arrayItem.departmentId,
         )
-        const dataObj = {
+        const departmentAdminName = await this.teachersService.findName(
+          arrayItem.departmentAdminUserID,
+        )
+        const dataObj: ResponseDepartmentDto = {
           departmentId: arrayItem.departmentId,
           departmentName: arrayItem.departmentName,
           information: arrayItem.information,
-          departmentAdminUserId: arrayItem.departmentAdminUserID,
+          departmentAdminName: departmentAdminName,
           countStudent: data.countStudents,
           countClasses: data.countClasses,
           countTeachers: countTeacher,

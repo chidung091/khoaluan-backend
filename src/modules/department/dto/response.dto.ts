@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
-import { BaseDto } from 'src/common/dto'
 
 export class ResponseDepartmentDto {
   @ApiProperty()
@@ -19,9 +18,8 @@ export class ResponseDepartmentDto {
   information: string
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  departmentAdminUserId: number
+  @IsString()
+  departmentAdminName: string
 
   @ApiProperty()
   @IsNumber()

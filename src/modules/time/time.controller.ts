@@ -21,6 +21,7 @@ import { TimeDto } from './dto/time.dto'
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard'
 import RoleGuard from '../auth/guard/role.guard'
 import { Role } from '../users/users.enum'
+import { UpdateTimeDto } from './dto/update-time.dto'
 
 @ApiBearerAuth()
 @UseGuards(RoleGuard(Role.Admin))
@@ -62,7 +63,7 @@ export class TimeController {
   @Put('/:id')
   @ApiOperation({ summary: 'Sửa mốc thời gian' })
   @ApiResponse({ status: 200, description: 'Success', type: [TimeDto] })
-  async update(@Param('id') id: number, @Body() time: TimeDto) {
+  async update(@Param('id') id: number, @Body() time: UpdateTimeDto) {
     return this.timeService.update(id, time)
   }
 

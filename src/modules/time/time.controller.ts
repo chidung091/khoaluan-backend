@@ -60,11 +60,11 @@ export class TimeController {
     return this.timeService.changeStatus(id)
   }
 
-  @Put('/:id')
-  @ApiOperation({ summary: 'Sửa mốc thời gian' })
+  @Post('/:id')
+  @ApiOperation({ summary: 'Sửa mốc thời gian chuẩn' })
   @ApiResponse({ status: 200, description: 'Success', type: [TimeDto] })
-  async update(@Param('id') id: number, @Body() time: UpdateTimeDto) {
-    return this.timeService.update(id, time)
+  async update(@Param('id') id: number, @Body() timeUpdate: UpdateTimeDto) {
+    return this.timeService.update(id, timeUpdate)
   }
 
   @Delete('/:id')

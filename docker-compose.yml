@@ -18,7 +18,7 @@ services:
     platform: linux/x86_64
     container_name: ${MYSQL_CONTAINER_NAME}
     image: mysql:5.7
-    command: --max_allowed_packet=500M --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci     # Set max_allowed_packet to 256M (or any other value)
+    command: --max_allowed_packet=32505856 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci     # Set max_allowed_packet to 256M (or any other value)
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}

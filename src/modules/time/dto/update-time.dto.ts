@@ -17,7 +17,7 @@ export class UpdateTime {
   semester: number
 
   @ApiProperty()
-  @IsDate({})
+  @IsDate({ notEmpty: false })
   @Type(() => Date)
   startTimeStudent: Date
 

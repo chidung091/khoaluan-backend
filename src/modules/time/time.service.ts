@@ -70,9 +70,6 @@ export class TimeService {
     const timeUpdate = {
       ...time,
     }
-    console.log('hien tai', existing)
-    console.log('dto', time)
-    console.log(timeUpdate)
     if (!existing) {
       throw new NotFoundException('NOT FOUND ID')
     }

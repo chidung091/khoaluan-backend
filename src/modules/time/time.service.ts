@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { CreateTimeDto } from './dto/create-time.dto'
-import { UpdateTimeDto } from './dto/update-time.dto'
+import { UpdateTime } from './dto/update-time.dto'
 import { Time } from './time.entity'
 import { Status } from './time.enum'
 
@@ -65,11 +65,14 @@ export class TimeService {
     })
   }
 
-  public async update(id: number, time: UpdateTimeDto): Promise<Time> {
+  public async update(id: number, time: UpdateTime): Promise<Time> {
     const existing = await this.timeRepository.findOne({ id: id })
     const timeUpdate = {
       ...time,
     }
+    console.log('hien tai', existing)
+    console.log('dto', time)
+    console.log(timeUpdate)
     if (!existing) {
       throw new NotFoundException('NOT FOUND ID')
     }

@@ -36,4 +36,4 @@ volumes:
   service:
 networks:
   point-training-network:
-    name: ${NETWORK_NAME}
+    name: point-network

@@ -37,6 +37,16 @@ export class TimeService {
       ...timeUpdate,
     })
   }
+
+  public async findActive() {
+    const findActive = await this.timeRepository.findOne({
+      status: Status.Active,
+    })
+    if (!findActive) {
+      throw new NotFoundException('NOT_FOUND_THIS_TIME_REPOSITORY')
+    }
+    return findActive
+  }
   public async changeStatus(id: number): Promise<Time> {
     const findActive = await this.timeRepository.find({ status: Status.Active })
     if (findActive) {

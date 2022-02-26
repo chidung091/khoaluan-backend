@@ -4,6 +4,7 @@ import { PORT } from './config/secrets'
 import { INestApplication, ValidationPipe } from '@nestjs/common'
 import { HttpExceptionFilter } from './filters'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { Transport } from '@nestjs/microservices'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -14,9 +15,17 @@ async function bootstrap() {
       whitelist: true,
     }),
   )
+  app.connectMicroservice({
+    transport: Transport.TCP,
+    options: {
+      host: 'localhost',
+      port: 4003,
+    },
+  })
   app.useGlobalFilters(new HttpExceptionFilter())
   setUpSwagger(app)
   app.enableCors()
+  await app.startAllMicroservices()
   await app.listen(PORT)
 }
 

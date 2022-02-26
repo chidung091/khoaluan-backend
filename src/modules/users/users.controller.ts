@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
+import { MessagePattern } from '@nestjs/microservices'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -50,5 +51,10 @@ export class UsersController {
   @ApiOperation({ summary: 'Đổi pass tài khoản' })
   async checkUID(@Req() req) {
     return req.user.userID
+  }
+
+  @MessagePattern({ role: 'user', cmd: 'get' })
+  async getUser() {
+    return 'true'
   }
 }

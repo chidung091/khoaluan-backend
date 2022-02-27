@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { firstValueFrom } from 'rxjs'
 import { HttpService } from '@nestjs/axios'
@@ -28,10 +28,13 @@ import { CourseService } from '../course/course.service'
 import { TeachersService } from '../teachers/teachers.service'
 import { ClassDetailResponseDepartmentDto } from './dto/class-detail-response-department.dto'
 import { ClassResponseHeadMasterDto } from './dto/class-response-headmaster.dto'
+import { ClientProxy } from '@nestjs/microservices'
 
 @Injectable()
 export class ClassService {
   constructor(
+    @Inject('RATING_SERVICE')
+    private readonly client: ClientProxy,
     @InjectRepository(Class)
     private classRepository: Repository<Class>,
     private httpService: HttpService,
@@ -80,6 +83,28 @@ export class ClassService {
     const responseData: ICreateClassWebhook = createClassWebhook.data
     console.log(responseData.students)
     return 'true'
+  }
+
+  public async createClassTCP(dto: CreateClassDto) {
+    const studentWh: IStudents = {
+      semester: dto.semester,
+      studentsIds: dto.studentsIds,
+      startYear: dto.startYear,
+      endYear: dto.endYear,
+      headMasterId: dto.headMasterId,
+      monitorId: dto.monitorId,
+    }
+    const classWh: ICreateClassWebhook = {
+      classId: dto.classId,
+      courseId: dto.classCourseCourseId,
+      students: [studentWh],
+    }
+    const user = this.client.emit<ICreateClassWebhook>(
+      { role: 'class', cmd: 'create' },
+      classWh,
+    )
+    await this.classRepository.save(dto)
+    return user
   }
 
   public async findAllClassByDepartmemt(id: number) {

@@ -54,7 +54,8 @@ export class UsersController {
   }
 
   @MessagePattern({ role: 'user', cmd: 'get' })
-  async getUser() {
-    return 'true'
+  async getUser(data: any) {
+    console.log(data)
+    return data
   }
 }

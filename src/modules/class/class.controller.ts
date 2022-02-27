@@ -28,12 +28,10 @@ export class ClassController {
   constructor(private readonly classService: ClassService) {}
 
   @Post()
-  @UseGuards(RoleGuard(Role.Department))
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create Class' })
   @ApiOkResponse({ type: CreateClassDto })
   async create(@Body() dto: CreateClassDto) {
-    return await this.classService.createClass(dto)
+    return await this.classService.createClassTCP(dto)
   }
 
   @Get()

@@ -38,7 +38,7 @@ export class UsersService {
     return this.usersRepository.save(users)
   }
 
-  public async getById(id: number) {
+  public async getById(id: number): Promise<Users> {
     const user = await this.usersRepository.findOne(id)
     if (user) {
       return user
@@ -47,6 +47,14 @@ export class UsersService {
       'User with this id does not exist',
       HttpStatus.NOT_FOUND,
     )
+  }
+
+  public async getByIdForMicroservice(id: number): Promise<Users> {
+    const user = await this.usersRepository.findOne(id)
+    if (user) {
+      return user
+    }
+    return null
   }
 
   public async getByEmail(email: string) {
@@ -58,6 +66,14 @@ export class UsersService {
       'User with this email does not exist',
       HttpStatus.NOT_FOUND,
     )
+  }
+
+  public async getByEmailForMicroservice(email: string) {
+    const user = await this.usersRepository.findOne({ email: email })
+    if (user) {
+      return user
+    }
+    return null
   }
 
   public async getListByRole(role: Role) {

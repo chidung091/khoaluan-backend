@@ -8,10 +8,12 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger'
+import { AuthGuard } from '../auth/guard/auth.guard'
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard'
 import RoleGuard from '../auth/guard/role.guard'
 import { ChangePasswordDto } from './dto/change-password.dto'
 import { CreateUsersDto } from './dto/create-users.dto'
+import { Users } from './entity/users.entity'
 import { Role } from './users.enum'
 import { UsersService } from './users.service'
 
@@ -46,16 +48,18 @@ export class UsersController {
   }
 
   @Get('/checkuid')
-  @ApiExcludeEndpoint()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Đổi pass tài khoản' })
   async checkUID(@Req() req) {
     return req.user.userID
   }
 
-  @MessagePattern({ role: 'user', cmd: 'get' })
-  async getUser(data: any) {
-    console.log(data)
-    return data
+  @MessagePattern({ role: 'user', cmd: 'get-by-id' })
+  async getUserById(id: number): Promise<Users> {
+    return this.usersService.getByIdForMicroservice(id)
+  }
+  @MessagePattern({ role: 'user', cmd: 'get-by-email' })
+  async getUserByEmail(email: string) {
+    return await this.usersService.getByEmailForMicroservice(email)
   }
 }

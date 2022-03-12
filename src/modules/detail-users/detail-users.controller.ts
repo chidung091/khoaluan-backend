@@ -7,6 +7,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common'
+import { MessagePattern } from '@nestjs/microservices'
 import {
   ApiOperation,
   ApiResponse,
@@ -73,5 +74,10 @@ export class DetailUsersController {
   @ApiResponse({ status: 201, description: 'Success', type: CreateUsersDto })
   async updateDetailUser(@Req() req, @Body() dto: CreateDetailUsersDto) {
     return await this.detailUsersService.update(req.user.userID, dto)
+  }
+
+  @MessagePattern({ role: 'detail-user', cmd: 'get-by-id' })
+  async getDetailById(id: number) {
+    return this.detailUsersService.findById(id)
   }
 }

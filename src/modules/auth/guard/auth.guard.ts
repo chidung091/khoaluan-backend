@@ -10,13 +10,11 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest()
-
     try {
-      const jwt = req.headers['Authorization']?.split(' ')[1]
+      const jwt = req.headers['authorization']?.split(' ')[1]
       const res = await firstValueFrom(
         this.client.send({ role: 'auth', cmd: 'check' }, jwt),
       )
-
       return res
     } catch (err) {
       Logger.error(err)

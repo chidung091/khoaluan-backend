@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { UsersModule } from './modules/users/users.module'
@@ -21,6 +21,7 @@ import { CourseModule } from './modules/course/course.module'
 import { ClassModule } from './modules/class/class.module'
 import { TeachersModule } from './modules/teachers/teachers.module'
 import { WebhookModule } from './modules/webhook/webhook.module'
+import { UserMiddleware } from './middleware/user.middleware'
 
 @Module({
   imports: [
@@ -51,4 +52,10 @@ import { WebhookModule } from './modules/webhook/webhook.module'
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(UserMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL })
+  }
+}

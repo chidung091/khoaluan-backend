@@ -6,6 +6,8 @@ import { DetailUsers } from './entity/detail-users.entity'
 import { HttpModule } from '@nestjs/axios'
 import { UsersModule } from '../users/users.module'
 import { ClassModule } from '../class/class.module'
+import { ClientsModule, Transport } from '@nestjs/microservices'
+import { BE_AUTH_SERVICE } from 'src/config/secrets'
 
 @Module({
   imports: [
@@ -13,6 +15,16 @@ import { ClassModule } from '../class/class.module'
     HttpModule,
     forwardRef(() => ClassModule),
     forwardRef(() => UsersModule),
+    ClientsModule.register([
+      {
+        name: 'AUTH_CLIENT',
+        transport: Transport.TCP,
+        options: {
+          host: BE_AUTH_SERVICE,
+          port: 4002,
+        },
+      },
+    ]),
   ],
   providers: [DetailUsersService],
   controllers: [DetailUsersController],

@@ -19,13 +19,15 @@ import { TimeService } from './time.service'
 import { CreateTimeDto } from './dto/create-time.dto'
 import { TimeDto } from './dto/time.dto'
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard'
-import RoleGuard from '../auth/guard/role.guard'
 import { Role } from '../users/users.enum'
 import { UpdateTime } from './dto/update-time.dto'
+import { AuthGuard } from '../auth/guard/auth.guard'
+import { RoleGuard } from 'src/guards/role.guard2'
+import { Roles } from 'src/decorators/roles.decorator'
 
 @ApiBearerAuth()
-@UseGuards(RoleGuard(Role.Admin))
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard, RoleGuard)
+@Roles(Role.Admin)
 @ApiTags('time')
 @Controller('time')
 export class TimeController {

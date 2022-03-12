@@ -9,7 +9,7 @@ import { DepartmentModule } from '../department/department.module'
 import { CourseModule } from '../course/course.module'
 import { TeachersModule } from '../teachers/teachers.module'
 import { ClientsModule, Transport } from '@nestjs/microservices'
-import { BE2_SERVICE } from 'src/config/secrets'
+import { BE2_SERVICE, BE_AUTH_SERVICE } from 'src/config/secrets'
 
 @Module({
   imports: [
@@ -20,6 +20,14 @@ import { BE2_SERVICE } from 'src/config/secrets'
         options: {
           host: BE2_SERVICE,
           port: 4004,
+        },
+      },
+      {
+        name: 'AUTH_CLIENT',
+        transport: Transport.TCP,
+        options: {
+          host: BE_AUTH_SERVICE,
+          port: 4002,
         },
       },
     ]),

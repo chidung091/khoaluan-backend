@@ -6,8 +6,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard'
-import RoleGuard from '../auth/guard/role.guard'
+import { Roles } from 'src/decorators/roles.decorator'
+import { RoleGuard } from 'src/guards/role.guard2'
+import { AuthGuard } from '../auth/guard/auth.guard'
 import { Role } from '../users/users.enum'
 import { AdminService } from './admin.service'
 import { getUserByRoleDto } from './dto/get-users-role.dto'
@@ -19,8 +20,8 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Post('/users')
-  @UseGuards(RoleGuard(Role.Admin))
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Xem danh sách người dùng theo Role' })
   @ApiBody({ type: getUserByRoleDto })
   @ApiResponse({ status: 200, description: 'Success' })

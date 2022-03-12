@@ -8,9 +8,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger'
+import { Roles } from 'src/decorators/roles.decorator'
+import { RoleGuard } from 'src/guards/role.guard2'
 import { AuthGuard } from '../auth/guard/auth.guard'
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard'
-import RoleGuard from '../auth/guard/role.guard'
 import { ChangePasswordDto } from './dto/change-password.dto'
 import { CreateUsersDto } from './dto/create-users.dto'
 import { Users } from './entity/users.entity'
@@ -25,8 +25,8 @@ export class UsersController {
 
   @Post()
   @ApiExcludeEndpoint()
-  @UseGuards(RoleGuard(Role.Admin))
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Tạo tài khoản sinh viên mới' })
   @ApiBody({ type: CreateUsersDto })
   @ApiResponse({ status: 201, description: 'Success', type: CreateUsersDto })
@@ -35,7 +35,7 @@ export class UsersController {
   }
 
   @Post('/change-password')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Đổi pass tài khoản' })
   @ApiBody({ type: ChangePasswordDto })
   @ApiResponse({ status: 201, description: 'Success', type: CreateUsersDto })
@@ -48,7 +48,8 @@ export class UsersController {
   }
 
   @Get('/checkuid')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Student, Role.Department)
   @ApiOperation({ summary: 'Đổi pass tài khoản' })
   async checkUID(@Req() req) {
     return req.user.userID

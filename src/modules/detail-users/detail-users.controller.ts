@@ -15,8 +15,9 @@ import {
   ApiBearerAuth,
   ApiBody,
 } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard'
-import RoleGuard from '../auth/guard/role.guard'
+import { Roles } from 'src/decorators/roles.decorator'
+import { RoleGuard } from 'src/guards/role.guard2'
+import { AuthGuard } from '../auth/guard/auth.guard'
 import { CreateUsersDto } from '../users/dto/create-users.dto'
 import { Role } from './detail-users.enum'
 import { DetailUsersService } from './detail-users.service'
@@ -30,7 +31,7 @@ export class DetailUsersController {
   constructor(private readonly detailUsersService: DetailUsersService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get users info' })
   @ApiResponse({ status: 201, description: 'Success', type: CreateUsersDto })
   async create(@Req() req) {
@@ -38,8 +39,8 @@ export class DetailUsersController {
   }
 
   @Get('/monitor/list-students')
-  @UseGuards(RoleGuard(Role.Monitor))
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Monitor)
   @ApiOperation({ summary: 'Get list users by monitor' })
   @ApiResponse({
     status: 200,
@@ -51,8 +52,8 @@ export class DetailUsersController {
   }
 
   @Get('/head-master/list-students/:id')
-  @UseGuards(RoleGuard(Role.Teacher))
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Get list users by teacher' })
   @ApiResponse({
     status: 200,
@@ -67,8 +68,8 @@ export class DetailUsersController {
   }
 
   @Put('/update')
-  @UseGuards(JwtAuthGuard)
-  @UseGuards(RoleGuard(Role.Monitor))
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Monitor)
   @ApiBody({ type: CreateDetailUsersDto })
   @ApiOperation({ summary: 'Get users info' })
   @ApiResponse({ status: 201, description: 'Success', type: CreateUsersDto })

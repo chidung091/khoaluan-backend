@@ -10,7 +10,7 @@ import {
 } from '@nestjs/swagger'
 import { Roles } from 'src/decorators/roles.decorator'
 import { RoleGuard } from 'src/guards/role.guard2'
-import { AuthGuard } from '../auth/guard/auth.guard'
+import { AuthGuard } from '../../guards/auth.guard'
 import { ChangePasswordDto } from './dto/change-password.dto'
 import { CreateUsersDto } from './dto/create-users.dto'
 import { Users } from './entity/users.entity'

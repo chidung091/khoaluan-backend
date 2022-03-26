@@ -5,13 +5,6 @@ import { HttpService } from '@nestjs/axios'
 import { Repository } from 'typeorm'
 import { CreateClassDto } from './dto/create-class.dto'
 import { Class } from './entity/class.entity'
-import { API_KEY } from 'src/config/secrets'
-import {
-  RATING_SERVICE_CREATE_CLASSS,
-  RATING_SERVICE_GET_CLASS,
-  RATING_SERVICE_GET_CLASS_DETAIL,
-  RATING_SERVICE_GET_CLASS_HEADMASTER,
-} from 'src/config/end-point'
 import {
   IClassId,
   IClassIds,

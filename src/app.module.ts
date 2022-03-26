@@ -11,7 +11,6 @@ import {
   MYSQL_ROOT_PASSWORD,
   MYSQL_ROOT_USER,
 } from './config/secrets'
-import { AuthModule } from './modules/auth/auth.module'
 import { DetailUsersModule } from './modules/detail-users/detail-users.module'
 import { MailModule } from './modules/mail/mail.module'
 import { CommonModule } from './modules/common/common.module'
@@ -38,7 +37,6 @@ import { UserMiddleware } from './middleware/user.middleware'
     }),
     UsersModule,
     TimeModule,
-    AuthModule,
     DetailUsersModule,
     MailModule,
     CommonModule,

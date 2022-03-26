@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger'
 import { Roles } from 'src/decorators/roles.decorator'
 import { RoleGuard } from 'src/guards/role.guard2'
-import { AuthGuard } from '../auth/guard/auth.guard'
+import { AuthGuard } from '../../guards/auth.guard'
 import { CreateUsersDto } from '../users/dto/create-users.dto'
 import { Role } from './detail-users.enum'
 import { DetailUsersService } from './detail-users.service'

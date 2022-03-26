@@ -58,34 +58,8 @@ export class ClassService {
     }
     return data.className
   }
-  public async createClass(dto: CreateClassDto) {
-    const studentWh: IStudents = {
-      semester: 1,
-      studentsIds: dto.studentsIds,
-      startYear: 2018,
-      endYear: 2019,
-      headMasterId: dto.headMasterId,
-      monitorId: 675105036,
-    }
-    const classWh: ICreateClassWebhook = {
-      classId: dto.classId,
-      courseId: dto.classCourseCourseId,
-      students: [studentWh],
-    }
-    const createClassWebhook = await firstValueFrom(
-      this.httpService.post<ICreateClassWebhook>(
-        `${RATING_SERVICE_CREATE_CLASSS}`,
-        classWh,
-        { headers: { 'api-key': API_KEY } },
-      ),
-    )
-    await this.classRepository.save(dto)
-    const responseData: ICreateClassWebhook = createClassWebhook.data
-    console.log(responseData.students)
-    return 'true'
-  }
 
-  public async createClassTCP(dto: CreateClassDto) {
+  public async createClass(dto: CreateClassDto) {
     const studentWh: IStudents = {
       semester: dto.semester,
       studentsIds: dto.studentsIds,
@@ -118,16 +92,10 @@ export class ClassService {
       const classIdWh: IClassIds = {
         classIds: classIdsWh,
       }
-      const classWh = await firstValueFrom(
-        this.httpService.post<IClassResponse[]>(
-          `${RATING_SERVICE_GET_CLASS}`,
-          classIdWh,
-          {
-            headers: { 'api-key': API_KEY },
-          },
-        ),
+      const classWh = await firstValueFrom<IClassResponse[]>(
+        this.client.send({ role: 'class', cmd: 'get-class' }, classIdWh),
       )
-      const classReponse: IClassResponse[] = classWh.data
+      const classReponse: IClassResponse[] = classWh
       const classReponsee: ClassResponseDepartmentDto[] = []
       await Promise.all(
         classReponse.map(async (arrayItem) => {
@@ -165,16 +133,10 @@ export class ClassService {
     const classIdWh: IClassId = {
       classId: id,
     }
-    const classWh = await firstValueFrom(
-      this.httpService.post<IClassResponse>(
-        `${RATING_SERVICE_GET_CLASS_DETAIL}`,
-        classIdWh,
-        {
-          headers: { 'api-key': API_KEY },
-        },
-      ),
+    const classWh = await firstValueFrom<IClassResponse>(
+      this.client.send({ role: 'class', cmd: 'class-detail' }, classIdWh),
     )
-    const students = classWh.data.students
+    const students = classWh.students
     const classReponse: ClassDetailResponseDepartmentDto[] = []
     await Promise.all(
       students.map(async (arrayItem) => {
@@ -194,20 +156,13 @@ export class ClassService {
   }
 
   public async findAllClassByMonitor(id: number) {
-    console.log(id)
     const classIdWh: IMonitorId = {
       monitorId: id,
     }
-    const classWh = await firstValueFrom(
-      this.httpService.post<IClassResponse[]>(
-        `${RATING_SERVICE_GET_CLASS}`,
-        classIdWh,
-        {
-          headers: { 'api-key': API_KEY },
-        },
-      ),
+    const classWh = await firstValueFrom<IClassResponse[]>(
+      this.client.send({ role: 'class', cmd: 'get-class' }, classIdWh),
     )
-    return classWh.data
+    return classWh
   }
 
   public async findAllClassByHeadMaster(id: number) {
@@ -217,18 +172,12 @@ export class ClassService {
       endYear: 2019,
       semester: 1,
     }
-    const classWh = await firstValueFrom(
-      this.httpService.post<[number]>(
-        `${RATING_SERVICE_GET_CLASS_HEADMASTER}`,
-        classIdWh,
-        {
-          headers: { 'api-key': API_KEY },
-        },
-      ),
+    const classWh = await firstValueFrom<[number]>(
+      this.client.send({ role: 'class', cmd: 'get-class' }, classIdWh),
     )
     const dataResponse: ClassResponseHeadMasterDto[] = []
     await Promise.all(
-      classWh.data.map(async (arrayItem) => {
+      classWh.map(async (arrayItem) => {
         const dataRes: ClassResponseHeadMasterDto = {
           className: await this.findName(arrayItem),
           classId: arrayItem,
@@ -255,16 +204,10 @@ export class ClassService {
       const classIdWh: IClassIds = {
         classIds: classIdsWh,
       }
-      const classWh = await firstValueFrom(
-        this.httpService.post<IClassResponse[]>(
-          `${RATING_SERVICE_GET_CLASS}`,
-          classIdWh,
-          {
-            headers: { 'api-key': API_KEY },
-          },
-        ),
+      const classWh = await firstValueFrom<IClassResponse[]>(
+        this.client.send({ role: 'class', cmd: 'get-class' }, classIdWh),
       )
-      const classReponse: IClassResponse[] = classWh.data
+      const classReponse: IClassResponse[] = classWh
       await Promise.all(
         classReponse.map(async (arrayItem) => {
           const students: IStudents[] = arrayItem.students

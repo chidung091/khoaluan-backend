@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+  mysql:
+    container_name: MY_SQL
+    image: mysql:5.7
+    command: --max_allowed_packet=32505856 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci     # Set max_allowed_packet to 256M (or any other value)
+    environment:
+      MYSQL_DATABASE: khoaluan
+      MYSQL_USER: huyen
+      MYSQL_PASSWORD: huyen123
+      MYSQL_ROOT_PASSWORD: admin123
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - point-database-network
+  mongodb:
+    container_name: mongo_rating
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - 3307:27017
+    volumes:
+      - mysql-data:/var/lib/mongodb
+    networks:
+      - point-database-network      
+volumes:
+  mysql-data:
+networks:
+  point-database-network:
+    name: point-database-network

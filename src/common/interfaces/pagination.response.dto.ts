@@ -1,11 +1,11 @@
 export interface IDataWithPagination<T = any> {
-  data: T[];
+  data: T[]
 
-  total: number;
+  total: number
 
-  page: number;
+  page: number
 
-  perPage: number;
+  perPage: number
 
-  totalPage: number;
+  totalPage: number
 }

@@ -1,5 +1,5 @@
-import { applyDecorators } from '@nestjs/common';
-import { Transform } from 'class-transformer';
+import { applyDecorators } from '@nestjs/common'
+import { Transform } from 'class-transformer'
 import {
   IsNotEmpty,
   IsOptional,
@@ -8,68 +8,74 @@ import {
   MaxLength,
   MinLength,
   ValidationOptions,
-} from 'class-validator';
+} from 'class-validator'
 
 export const IsString = (
   options: {
-    optional?: boolean;
-    defaultValue?: string;
-    minLength?: number;
-    maxLength?: number;
-    pattern?: RegExp;
-    trim?: boolean;
-    lowercase?: boolean;
-    notEmpty?: boolean;
+    optional?: boolean
+    defaultValue?: string
+    minLength?: number
+    maxLength?: number
+    pattern?: RegExp
+    trim?: boolean
+    lowercase?: boolean
+    notEmpty?: boolean
   } = {},
   stringOptions?: ValidationOptions,
 ) => {
-  const decorators = [];
+  const decorators = []
 
-  const { optional, defaultValue, minLength, maxLength, pattern, trim, lowercase, notEmpty } = Object.assign(
-    { trim: true },
-    options,
-  );
+  const {
+    optional,
+    defaultValue,
+    minLength,
+    maxLength,
+    pattern,
+    trim,
+    lowercase,
+    notEmpty,
+  } = Object.assign({ trim: true }, options)
 
   if (optional) {
-    decorators.push(IsOptional());
+    decorators.push(IsOptional())
   }
 
   decorators.push(
     Transform(({ value }) => {
-      if (stringOptions?.each) return value;
+      if (stringOptions?.each) return value
 
-      let v = value || typeof value === 'string' ? String(value) : defaultValue;
+      let v = value || typeof value === 'string' ? String(value) : defaultValue
 
       if (!v) {
-        return v;
+        return v
       }
 
       if (trim) {
-        v = v.trim();
+        v = v.trim()
       }
 
       if (lowercase) {
-        v = v.toLowerCase();
+        v = v.toLowerCase()
       }
-      return v;
+      return v
     }),
-  );
+  )
 
   if (pattern) {
-    decorators.push(Matches(pattern));
+    decorators.push(Matches(pattern))
   }
 
   if (minLength) {
-    decorators.push(MinLength(minLength));
+    decorators.push(MinLength(minLength))
   }
 
   if (maxLength) {
-    decorators.push(MaxLength(maxLength));
+    decorators.push(MaxLength(maxLength))
   }
 
   if (notEmpty) {
-    decorators.push(IsNotEmpty());
+    decorators.push(IsNotEmpty())
   }
 
-  return applyDecorators(...decorators, IsStringOriginal(stringOptions));
-};
+  return applyDecorators(...decorators, IsStringOriginal(stringOptions))
+}

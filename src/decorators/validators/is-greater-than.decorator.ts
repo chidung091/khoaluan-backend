@@ -1,6 +1,13 @@
-import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
+import {
+  registerDecorator,
+  ValidationOptions,
+  ValidationArguments,
+} from 'class-validator'
 
-export function IsGreaterThan(property: string, validationOptions?: ValidationOptions) {
+export function IsGreaterThan(
+  property: string,
+  validationOptions?: ValidationOptions,
+) {
   // eslint-disable-next-line @typescript-eslint/ban-types
   return function (object: Object, propertyName: string) {
     registerDecorator({
@@ -12,15 +19,19 @@ export function IsGreaterThan(property: string, validationOptions?: ValidationOp
       options: validationOptions,
       validator: {
         defaultMessage() {
-          return `${propertyName} must be greater than ${property}`;
+          return `${propertyName} must be greater than ${property}`
         },
         validate(value: any, args: ValidationArguments) {
-          const [relatedPropertyName] = args.constraints;
-          const relatedValue = (args.object as any)[relatedPropertyName];
+          const [relatedPropertyName] = args.constraints
+          const relatedValue = (args.object as any)[relatedPropertyName]
 
-          return typeof value === 'number' && typeof relatedValue === 'number' && value > relatedValue;
+          return (
+            typeof value === 'number' &&
+            typeof relatedValue === 'number' &&
+            value > relatedValue
+          )
         },
       },
-    });
-  };
+    })
+  }
 }

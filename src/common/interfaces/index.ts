@@ -1,2 +1,2 @@
-export * from './jwt.interface';
-export * from './pagination.response.dto';
+export * from './jwt.interface'
+export * from './pagination.response.dto'

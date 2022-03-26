@@ -1,16 +1,16 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger'
 
 export class ErrorResponse {
   @ApiPropertyOptional({ type: Number })
-  readonly status?: any;
+  readonly status?: any
 
   @ApiPropertyOptional({
     type: String,
     example: 'Error message',
     default: 'Internal Server Error',
   })
-  readonly message?: any;
+  readonly message?: any
 
   @ApiPropertyOptional({ type: String, example: 'Error' })
-  readonly name?: any;
+  readonly name?: any
 }

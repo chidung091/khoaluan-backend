@@ -1,5 +1,5 @@
-import { applyDecorators } from '@nestjs/common';
-import { Type } from 'class-transformer';
+import { applyDecorators } from '@nestjs/common'
+import { Type } from 'class-transformer'
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -11,8 +11,8 @@ import {
   IsOptional,
   ValidateNested,
   ValidationOptions,
-} from 'class-validator';
-import { isArrayNotEmpty } from 'src/common/utils';
+} from 'class-validator'
+import { isArrayNotEmpty } from 'src/common/utils'
 
 export const IsArray = (
   {
@@ -25,50 +25,50 @@ export const IsArray = (
     nestedType,
     acceptedValues,
   }: {
-    optional?: boolean;
-    notEmpty?: boolean;
-    minSize?: number;
-    maxSize?: number;
-    unique?: ArrayUniqueIdentifier[];
-    nestedValidate?: boolean;
-    nestedType?: any;
-    acceptedValues?: any[];
+    optional?: boolean
+    notEmpty?: boolean
+    minSize?: number
+    maxSize?: number
+    unique?: ArrayUniqueIdentifier[]
+    nestedValidate?: boolean
+    nestedType?: any
+    acceptedValues?: any[]
   },
   options?: ValidationOptions,
 ) => {
-  const decorators = [];
+  const decorators = []
 
   if (notEmpty) {
-    decorators.push(IsNotEmpty());
+    decorators.push(IsNotEmpty())
   }
 
   if (minSize) {
-    decorators.push(ArrayMinSize(minSize));
+    decorators.push(ArrayMinSize(minSize))
   }
 
   if (maxSize) {
-    decorators.push(ArrayMaxSize(maxSize));
+    decorators.push(ArrayMaxSize(maxSize))
   }
 
   if (isArrayNotEmpty(unique)) {
-    unique.forEach((fn) => decorators.push(ArrayUnique(fn)));
+    unique.forEach((fn) => decorators.push(ArrayUnique(fn)))
   }
 
   if (nestedValidate) {
-    decorators.push(ValidateNested({ each: true }));
+    decorators.push(ValidateNested({ each: true }))
 
     if (nestedType) {
-      decorators.push(Type(() => nestedType));
+      decorators.push(Type(() => nestedType))
     }
   }
 
   if (isArrayNotEmpty(acceptedValues)) {
-    decorators.push(IsIn(acceptedValues, { each: true }));
+    decorators.push(IsIn(acceptedValues, { each: true }))
   }
 
   if (optional) {
-    decorators.push(IsOptional());
+    decorators.push(IsOptional())
   }
 
-  return applyDecorators(...decorators, IsArrayOriginal(options));
-};
+  return applyDecorators(...decorators, IsArrayOriginal(options))
+}

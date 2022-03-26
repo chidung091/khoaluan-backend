@@ -1,5 +1,5 @@
-import { applyDecorators } from '@nestjs/common';
-import { Transform } from 'class-transformer';
+import { applyDecorators } from '@nestjs/common'
+import { Transform } from 'class-transformer'
 import {
   IsInt,
   IsNegative,
@@ -10,10 +10,10 @@ import {
   IsPositive,
   Max,
   Min,
-} from 'class-validator';
-import { isNumber } from 'lodash';
-import { isArrayNotEmpty } from 'src/common/utils';
-import { IsGreaterThan } from './is-greater-than.decorator';
+} from 'class-validator'
+import { isNumber } from 'lodash'
+import { isArrayNotEmpty } from 'src/common/utils'
+import { IsGreaterThan } from './is-greater-than.decorator'
 
 export const IsNumber = (
   {
@@ -27,62 +27,62 @@ export const IsNumber = (
     notEmpty,
     greaterThan,
   }: {
-    optional?: boolean;
-    defaultValue?: number;
-    min?: number;
-    max?: number;
-    positive?: boolean;
-    negative?: boolean;
-    integer?: boolean;
-    notEmpty?: boolean;
-    greaterThan?: string[];
+    optional?: boolean
+    defaultValue?: number
+    min?: number
+    max?: number
+    positive?: boolean
+    negative?: boolean
+    integer?: boolean
+    notEmpty?: boolean
+    greaterThan?: string[]
   },
   numberOptions?: IsNumberOptions,
 ) => {
-  const decorators = [];
+  const decorators = []
 
   if (isArrayNotEmpty(greaterThan)) {
-    greaterThan.forEach((f) => decorators.push(IsGreaterThan(f)));
+    greaterThan.forEach((f) => decorators.push(IsGreaterThan(f)))
   }
 
   if (min) {
-    decorators.push(Min(min));
+    decorators.push(Min(min))
   }
 
   if (max) {
-    decorators.push(Max(max));
+    decorators.push(Max(max))
   }
 
   if (positive) {
-    decorators.push(IsPositive());
+    decorators.push(IsPositive())
   }
 
   if (negative) {
-    decorators.push(IsNegative());
+    decorators.push(IsNegative())
   }
 
   if (integer) {
-    decorators.push(IsInt());
+    decorators.push(IsInt())
   }
 
-  decorators.push(IsNumberOriginal(numberOptions));
+  decorators.push(IsNumberOriginal(numberOptions))
 
   if (optional || isNumber(defaultValue)) {
-    decorators.push(IsOptional());
+    decorators.push(IsOptional())
   }
 
   if (notEmpty) {
-    decorators.push(IsNotEmpty());
+    decorators.push(IsNotEmpty())
   }
 
   decorators.push(
     Transform(({ value }) => {
       if (value) {
-        return +value;
+        return +value
       }
-      return defaultValue ? defaultValue : value;
+      return defaultValue ? defaultValue : value
     }),
-  );
+  )
 
-  return applyDecorators(...decorators);
-};
+  return applyDecorators(...decorators)
+}

@@ -11,6 +11,7 @@ import {
   IClassResponse,
   ICreateClassWebhook,
   IDepartmentResponse,
+  IMonitor,
   IMonitorId,
   IStudents,
   ITeacher,
@@ -149,11 +150,14 @@ export class ClassService {
   }
 
   public async findAllClassByMonitor(id: number) {
-    const classIdWh: IMonitorId = {
+    const classIdWh: IMonitor = {
       monitorId: id,
+      startYear: 2018,
+      endYear: 2019,
+      semester: 1,
     }
     const classWh = await firstValueFrom<IClassResponse[]>(
-      this.client.send({ role: 'class', cmd: 'get-class' }, classIdWh),
+      this.client.send({ role: 'class', cmd: 'get-class-monitor' }, classIdWh),
     )
     return classWh
   }

@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios'
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
+import { ClientProxy } from '@nestjs/microservices'
 import { InjectRepository } from '@nestjs/typeorm'
 import { firstValueFrom } from 'rxjs'
 import {
@@ -22,6 +23,8 @@ import { DetailUsers } from './entity/detail-users.entity'
 @Injectable()
 export class DetailUsersService {
   constructor(
+    @Inject('RATING_SERVICE')
+    private readonly client: ClientProxy,
     @InjectRepository(DetailUsers)
     private detailUsersRepository: Repository<DetailUsers>,
     private httpService: HttpService,
@@ -65,16 +68,10 @@ export class DetailUsersService {
       endYear: 2019,
       semester: 1,
     }
-    const classWh = await firstValueFrom(
-      this.httpService.post<[number]>(
-        `${RATING_SERVICE_GET_LIST_STUDENTS_BY_MONITOR}`,
-        classIdWh,
-        {
-          headers: { 'api-key': API_KEY },
-        },
-      ),
+    const classWh = await firstValueFrom<[number]>(
+      this.client.send({ role: 'class', cmd: 'get-class-monitor' }, classIdWh),
     )
-    const data = await this.findByIds(classWh.data)
+    const data = await this.findByIds(classWh)
     const dataResponse: DetailUsersMonitorResponseDto[] = []
     await Promise.all(
       data.map(async (arrayItem) => {
@@ -96,18 +93,15 @@ export class DetailUsersService {
       headMasterId: id,
       classId: classId,
     }
-    const classWh = await firstValueFrom(
-      this.httpService.post<IHeadMasterResponse[]>(
-        `${RATING_SERVICE_GET_LIST_STUDENTS_BY_HEADMASTER}`,
+    const classWh = await firstValueFrom<IHeadMasterResponse[]>(
+      this.client.send(
+        { role: 'class', cmd: 'get-class-headmaster' },
         classIdWh,
-        {
-          headers: { 'api-key': API_KEY },
-        },
       ),
     )
     const dataResponse: DetailUsersMonitorResponseDto[] = []
     await Promise.all(
-      classWh.data.map(async (arrayItem) => {
+      classWh.map(async (arrayItem) => {
         const dataRes: DetailUsersHeadMasterResponseDto = {
           userID: arrayItem.id,
           name: await (await this.findById(arrayItem.id)).name,

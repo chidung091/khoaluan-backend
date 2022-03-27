@@ -21,6 +21,13 @@ export interface IMonitorId {
   monitorId: number
 }
 
+export interface IMonitor {
+  monitorId: number
+  startYear: number
+  semester: number
+  endYear: number
+}
+
 export interface ITeacher {
   headMasterId: number
   startYear: number

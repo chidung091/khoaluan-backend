@@ -10,6 +10,7 @@ import { CourseModule } from '../course/course.module'
 import { TeachersModule } from '../teachers/teachers.module'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { BE2_SERVICE, BE_AUTH_SERVICE } from 'src/config/secrets'
+import { TimeModule } from '../time/time.module'
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { BE2_SERVICE, BE_AUTH_SERVICE } from 'src/config/secrets'
     HttpModule,
     forwardRef(() => UsersModule),
     forwardRef(() => DepartmentModule),
+    forwardRef(() => TimeModule),
     CourseModule,
     forwardRef(() => TeachersModule),
   ],

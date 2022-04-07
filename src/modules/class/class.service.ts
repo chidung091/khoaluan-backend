@@ -23,6 +23,7 @@ import { TeachersService } from '../teachers/teachers.service'
 import { ClassDetailResponseDepartmentDto } from './dto/class-detail-response-department.dto'
 import { ClassResponseHeadMasterDto } from './dto/class-response-headmaster.dto'
 import { ClientProxy } from '@nestjs/microservices'
+import { TimeService } from '../time/time.service'
 
 @Injectable()
 export class ClassService {
@@ -35,6 +36,7 @@ export class ClassService {
     private departmentService: DepartmentService,
     private courseService: CourseService,
     private teachersService: TeachersService,
+    private timeService: TimeService,
   ) {}
 
   private async findById(id: number): Promise<Class[]> {
@@ -76,6 +78,8 @@ export class ClassService {
   }
 
   public async findAllClassByDepartmemt(id: number) {
+    const getActiveTime = await this.timeService.findActive()
+
     const department = await this.departmentService.findDepartment(id)
     const data = await this.findById(department.departmentId)
     const classIdsWh = []
@@ -95,7 +99,10 @@ export class ClassService {
         classReponse.map(async (arrayItem) => {
           const students: IStudents[] = arrayItem.students
           const student = students.find((student) => {
-            return student.startYear === 2018 && student.endYear === 2019
+            return (
+              student.startYear === getActiveTime.startYear &&
+              student.endYear === getActiveTime.endYear
+            )
           })
           const data: ClassResponseDepartmentDto = {
             courseName: (await this.courseService.findName(arrayItem.courseId))
@@ -150,11 +157,13 @@ export class ClassService {
   }
 
   public async findAllClassByMonitor(id: number) {
+    const getActiveTime = await this.timeService.findActive()
+
     const classIdWh: IMonitor = {
       monitorId: id,
-      startYear: 2018,
-      endYear: 2019,
-      semester: 1,
+      startYear: getActiveTime.startYear,
+      endYear: getActiveTime.endYear,
+      semester: getActiveTime.semester,
     }
     const classWh = await firstValueFrom<IClassResponse[]>(
       this.client.send({ role: 'class', cmd: 'get-class-monitor' }, classIdWh),
@@ -163,11 +172,13 @@ export class ClassService {
   }
 
   public async findAllClassByHeadMaster(id: number) {
+    const getActiveTime = await this.timeService.findActive()
+
     const classIdWh: ITeacher = {
       headMasterId: id,
-      startYear: 2018,
-      endYear: 2019,
-      semester: 1,
+      startYear: getActiveTime.startYear,
+      endYear: getActiveTime.endYear,
+      semester: getActiveTime.semester,
     }
     const classWh = await firstValueFrom<[number]>(
       this.client.send({ role: 'class', cmd: 'get-class' }, classIdWh),
@@ -188,6 +199,7 @@ export class ClassService {
   public async getDataforDepartmentCount(
     id: number,
   ): Promise<IDepartmentResponse> {
+    const getActiveTime = await this.timeService.findActive()
     const data = await this.findById(id)
     const dataResponse: IDepartmentResponse = {
       countClasses: 0,
@@ -209,7 +221,10 @@ export class ClassService {
         classReponse.map(async (arrayItem) => {
           const students: IStudents[] = arrayItem.students
           const student = students.find((student) => {
-            return student.startYear === 2018 && student.endYear === 2019
+            return (
+              student.startYear === getActiveTime.startYear &&
+              student.endYear === getActiveTime.endYear
+            )
           })
           if (arrayItem.classId) {
             dataResponse.countClasses += 1

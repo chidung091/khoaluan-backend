@@ -24,6 +24,7 @@ export class TimeService {
   public async findById(id: number): Promise<Time> {
     return this.timeRepository.findOne(id)
   }
+
   public async get(): Promise<Time[]> {
     return this.timeRepository.find()
   }
@@ -47,6 +48,7 @@ export class TimeService {
     }
     return findActive
   }
+
   public async changeStatus(id: number): Promise<Time> {
     const findActive = await this.timeRepository.find({ status: Status.Active })
     if (findActive) {

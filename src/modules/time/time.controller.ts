@@ -23,16 +23,17 @@ import { UpdateTime } from './dto/update-time.dto'
 import { AuthGuard } from '../../guards/auth.guard'
 import { RoleGuard } from 'src/guards/role.guard2'
 import { Roles } from 'src/decorators/roles.decorator'
+import { MessagePattern } from '@nestjs/microservices'
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard, RoleGuard)
-@Roles(Role.Admin)
 @ApiTags('time')
 @Controller('time')
 export class TimeController {
   constructor(private readonly timeService: TimeService) {}
 
   @Post()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Tạo mốc thời gian mới' })
   @ApiBody({ type: CreateTimeDto })
   @ApiResponse({ status: 201, description: 'Success', type: TimeDto })
@@ -41,6 +42,8 @@ export class TimeController {
   }
 
   @Get('/:id')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Tìm mốc thời gian theo id' })
   @ApiResponse({ status: 200, description: 'Success', type: [TimeDto] })
   async findById(@Param('id') id: number) {
@@ -48,6 +51,8 @@ export class TimeController {
   }
 
   @Get()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Tìm mốc thời gian' })
   @ApiResponse({ status: 200, description: 'Success', type: [TimeDto] })
   async get() {
@@ -55,6 +60,8 @@ export class TimeController {
   }
 
   @Post('/:id/status')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Đổi trạng thái' })
   @ApiResponse({ status: 200, description: 'Success', type: [TimeDto] })
   async changeStatus(@Param('id') id: number) {
@@ -62,6 +69,8 @@ export class TimeController {
   }
 
   @Put('/:id')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Sửa mốc thời gian cực chuẩn nè' })
   @ApiBody({ type: UpdateTime })
   @ApiResponse({ status: 200, description: 'Success', type: [TimeDto] })
@@ -70,9 +79,16 @@ export class TimeController {
   }
 
   @Delete('/:id')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Sửa mốc thời gian' })
   @ApiResponse({ status: 200, description: 'Success', type: [TimeDto] })
   async deleteStatus(@Param('id') id: number) {
     return this.timeService.delete(id)
+  }
+
+  @MessagePattern({ role: 'time', cmd: 'get-active' })
+  async getActive() {
+    return this.timeService.findActive()
   }
 }

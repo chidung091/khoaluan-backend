@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { TimeService } from './time.service'
 import { TimeController } from './time.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -10,7 +10,7 @@ import { BE_AUTH_SERVICE } from 'src/config/secrets'
 @Module({
   imports: [
     TypeOrmModule.forFeature([Time]),
-    UsersModule,
+    forwardRef(() => UsersModule),
     ClientsModule.register([
       {
         name: 'AUTH_CLIENT',
@@ -24,5 +24,6 @@ import { BE_AUTH_SERVICE } from 'src/config/secrets'
   ],
   providers: [TimeService],
   controllers: [TimeController],
+  exports: [TimeService],
 })
 export class TimeModule {}

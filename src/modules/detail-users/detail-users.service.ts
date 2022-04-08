@@ -10,10 +10,13 @@ import {
 import { API_KEY } from 'src/config/secrets'
 import { Repository } from 'typeorm'
 import { ClassService } from '../class/class.service'
+import { TimeService } from '../time/time.service'
 import {
   IHeadMaster,
   IHeadMasterResponse,
+  IHeadMasterSearch,
   IMonitor,
+  IMonitorSearch,
 } from './detail-users.interface'
 import { DetailUsersHeadMasterResponseDto } from './dto/detail-users-headmaster.response.dto'
 import { DetailUsersMonitorResponseDto } from './dto/detail-users-monitor.response.dto'
@@ -29,6 +32,7 @@ export class DetailUsersService {
     private detailUsersRepository: Repository<DetailUsers>,
     private httpService: HttpService,
     private classService: ClassService,
+    private timeService: TimeService,
   ) {}
 
   public async findById(id: number): Promise<DetailUsers> {
@@ -62,11 +66,13 @@ export class DetailUsersService {
     })
   }
   public async findAllClassByMonitor(id: number) {
+    const getActiveTime = await this.timeService.findActive()
+
     const classIdWh: IMonitor = {
       monitorId: id,
-      startYear: 2018,
-      endYear: 2019,
-      semester: 1,
+      startYear: getActiveTime.startYear,
+      endYear: getActiveTime.endYear,
+      semester: getActiveTime.semester,
     }
     const classWh = await firstValueFrom<[number]>(
       this.client.send({ role: 'class', cmd: 'get-class-monitor' }, classIdWh),
@@ -86,10 +92,12 @@ export class DetailUsersService {
   }
 
   public async findAllStudentByHeadMaster(classId: number, id: number) {
+    const getActiveTime = await this.timeService.findActive()
+
     const classIdWh: IHeadMaster = {
-      startYear: 2018,
-      endYear: 2019,
-      semester: 1,
+      startYear: getActiveTime.startYear,
+      endYear: getActiveTime.endYear,
+      semester: getActiveTime.semester,
       headMasterId: id,
       classId: classId,
     }
@@ -106,6 +114,66 @@ export class DetailUsersService {
           userID: arrayItem.id,
           name: await (await this.findById(arrayItem.id)).name,
           className: await this.classService.findName(arrayItem.classId),
+        }
+        dataResponse.push(dataRes)
+      }),
+    )
+    return dataResponse
+  }
+
+  async findStudentIdHeadmaster(studentId: number, id: number) {
+    const getActiveTime = await this.timeService.findActive()
+
+    const classIdWh: IHeadMasterSearch = {
+      startYear: getActiveTime.startYear,
+      endYear: getActiveTime.endYear,
+      semester: getActiveTime.semester,
+      headMasterId: id,
+      studentId: studentId,
+    }
+    const classWh = await firstValueFrom<IHeadMasterResponse[]>(
+      this.client.send(
+        { role: 'class', cmd: 'get-student-list-headmaster' },
+        classIdWh,
+      ),
+    )
+    const dataResponse: DetailUsersMonitorResponseDto[] = []
+    await Promise.all(
+      classWh.map(async (arrayItem) => {
+        const dataRes: DetailUsersHeadMasterResponseDto = {
+          userID: arrayItem.id,
+          name: await (await this.findById(arrayItem.id)).name,
+          className: await this.classService.findName(arrayItem.classId),
+        }
+        dataResponse.push(dataRes)
+      }),
+    )
+    return dataResponse
+  }
+
+  async findStudentIdMonitor(studentId: number, id: number) {
+    const getActiveTime = await this.timeService.findActive()
+
+    const classIdWh: IMonitorSearch = {
+      monitorId: id,
+      startYear: getActiveTime.startYear,
+      endYear: getActiveTime.endYear,
+      semester: getActiveTime.semester,
+      studentId: studentId,
+    }
+    const classWh = await firstValueFrom<[number]>(
+      this.client.send(
+        { role: 'class', cmd: 'get-student-list-monitor' },
+        classIdWh,
+      ),
+    )
+    const data = await this.findByIds(classWh)
+    const dataResponse: DetailUsersMonitorResponseDto[] = []
+    await Promise.all(
+      data.map(async (arrayItem) => {
+        const dataRes: DetailUsersMonitorResponseDto = {
+          userID: arrayItem.users.userID,
+          name: arrayItem.name,
         }
         dataResponse.push(dataRes)
       }),

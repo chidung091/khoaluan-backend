@@ -166,7 +166,10 @@ export class ClassService {
       semester: getActiveTime.semester,
     }
     const classWh = await firstValueFrom<IClassResponse[]>(
-      this.client.send({ role: 'class', cmd: 'get-class-monitor' }, classIdWh),
+      this.client.send(
+        { role: 'class', cmd: 'get-class-id-monitor' },
+        classIdWh,
+      ),
     )
     return classWh
   }
@@ -181,7 +184,10 @@ export class ClassService {
       semester: getActiveTime.semester,
     }
     const classWh = await firstValueFrom<[number]>(
-      this.client.send({ role: 'class', cmd: 'get-class' }, classIdWh),
+      this.client.send(
+        { role: 'class', cmd: 'get-class-id-headmaster' },
+        classIdWh,
+      ),
     )
     const dataResponse: ClassResponseHeadMasterDto[] = []
     await Promise.all(

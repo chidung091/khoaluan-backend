@@ -8,6 +8,7 @@ import { UsersModule } from '../users/users.module'
 import { ClassModule } from '../class/class.module'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { BE2_SERVICE, BE_AUTH_SERVICE } from 'src/config/secrets'
+import { TimeModule } from '../time/time.module'
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { BE2_SERVICE, BE_AUTH_SERVICE } from 'src/config/secrets'
     HttpModule,
     forwardRef(() => ClassModule),
     forwardRef(() => UsersModule),
+    forwardRef(() => TimeModule),
     ClientsModule.register([
       {
         name: 'RATING_SERVICE',

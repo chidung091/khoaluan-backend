@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Post,
   Put,
   Req,
   UseGuards,
@@ -22,6 +23,7 @@ import { CreateUsersDto } from '../users/dto/create-users.dto'
 import { Role } from './detail-users.enum'
 import { DetailUsersService } from './detail-users.service'
 import { DetailUsersMonitorResponseDto } from './dto/detail-users-monitor.response.dto'
+import { DetailUsersHeadMasterDto } from './dto/detail-users-search-headmaster.dto'
 import { CreateDetailUsersDto } from './dto/detail-users.dto'
 
 @ApiBearerAuth()
@@ -63,6 +65,41 @@ export class DetailUsersController {
   async listStudentsHeadMaster(@Param('id') classId: number, @Req() req) {
     return await this.detailUsersService.findAllStudentByHeadMaster(
       classId,
+      req.user.userID,
+    )
+  }
+
+  @Post('/monitor/list-students')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Monitor)
+  @ApiOperation({ summary: 'Get list users by monitor' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    type: [DetailUsersMonitorResponseDto],
+  })
+  async listStudentsSearch(@Req() req, @Body() dto: DetailUsersHeadMasterDto) {
+    return await this.detailUsersService.findStudentIdMonitor(
+      dto.studentId,
+      req.user.userID,
+    )
+  }
+
+  @Post('/head-master/list-students')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Teacher)
+  @ApiOperation({ summary: 'Get list users by teacher' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    type: [DetailUsersMonitorResponseDto],
+  })
+  async listStudentsHeadMasterSearch(
+    @Body() dto: DetailUsersHeadMasterDto,
+    @Req() req,
+  ) {
+    return await this.detailUsersService.findStudentIdHeadmaster(
+      dto.studentId,
       req.user.userID,
     )
   }

@@ -12,7 +12,6 @@ import {
   ICreateClassWebhook,
   IDepartmentResponse,
   IMonitor,
-  IMonitorId,
   IStudents,
   ITeacher,
 } from './interface/create-class-webhook.interface'

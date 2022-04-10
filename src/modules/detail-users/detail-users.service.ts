@@ -3,20 +3,17 @@ import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 import { InjectRepository } from '@nestjs/typeorm'
 import { firstValueFrom } from 'rxjs'
-import {
-  RATING_SERVICE_GET_LIST_STUDENTS_BY_HEADMASTER,
-  RATING_SERVICE_GET_LIST_STUDENTS_BY_MONITOR,
-} from 'src/config/end-point'
-import { API_KEY } from 'src/config/secrets'
 import { Repository } from 'typeorm'
 import { ClassService } from '../class/class.service'
 import { TimeService } from '../time/time.service'
+import { Role } from './detail-users.enum'
 import {
   IHeadMaster,
   IHeadMasterResponse,
   IHeadMasterSearch,
   IMonitor,
   IMonitorSearch,
+  IScoreRequest,
 } from './detail-users.interface'
 import { DetailUsersHeadMasterResponseDto } from './dto/detail-users-headmaster.response.dto'
 import { DetailUsersMonitorResponseDto } from './dto/detail-users-monitor.response.dto'
@@ -81,9 +78,25 @@ export class DetailUsersService {
     const dataResponse: DetailUsersMonitorResponseDto[] = []
     await Promise.all(
       data.map(async (arrayItem) => {
+        const requestStudent: IScoreRequest = {
+          studentId: arrayItem.users.userID,
+          type: Role.Student,
+        }
+        const requestMonitor: IScoreRequest = {
+          studentId: arrayItem.users.userID,
+          type: Role.Monitor,
+        }
+        const studentScore = await firstValueFrom<number>(
+          this.client.send({ role: 'mark', cmd: 'get-score' }, requestStudent),
+        )
+        const monitorScore = await firstValueFrom<number>(
+          this.client.send({ role: 'mark', cmd: 'get-score' }, requestMonitor),
+        )
         const dataRes: DetailUsersMonitorResponseDto = {
           userID: arrayItem.users.userID,
           name: arrayItem.name,
+          studentScore: studentScore,
+          monitorScore: monitorScore,
         }
         dataResponse.push(dataRes)
       }),
@@ -107,13 +120,37 @@ export class DetailUsersService {
         classIdWh,
       ),
     )
-    const dataResponse: DetailUsersMonitorResponseDto[] = []
+    const dataResponse: DetailUsersHeadMasterResponseDto[] = []
     await Promise.all(
       classWh.map(async (arrayItem) => {
+        const requestStudent: IScoreRequest = {
+          studentId: arrayItem.id,
+          type: Role.Student,
+        }
+        const requestMonitor: IScoreRequest = {
+          studentId: arrayItem.id,
+          type: Role.Monitor,
+        }
+        const requestTeacher: IScoreRequest = {
+          studentId: arrayItem.id,
+          type: Role.Teacher,
+        }
+        const studentScore = await firstValueFrom<number>(
+          this.client.send({ role: 'mark', cmd: 'get-score' }, requestStudent),
+        )
+        const monitorScore = await firstValueFrom<number>(
+          this.client.send({ role: 'mark', cmd: 'get-score' }, requestMonitor),
+        )
+        const teacherScore = await firstValueFrom<number>(
+          this.client.send({ role: 'mark', cmd: 'get-score' }, requestTeacher),
+        )
         const dataRes: DetailUsersHeadMasterResponseDto = {
           userID: arrayItem.id,
           name: await (await this.findById(arrayItem.id)).name,
           className: await this.classService.findName(arrayItem.classId),
+          studentScore: studentScore,
+          monitorScore: monitorScore,
+          teacherScore: teacherScore,
         }
         dataResponse.push(dataRes)
       }),
@@ -137,13 +174,37 @@ export class DetailUsersService {
         classIdWh,
       ),
     )
-    const dataResponse: DetailUsersMonitorResponseDto[] = []
+    const dataResponse: DetailUsersHeadMasterResponseDto[] = []
     await Promise.all(
       classWh.map(async (arrayItem) => {
+        const requestStudent: IScoreRequest = {
+          studentId: arrayItem.id,
+          type: Role.Student,
+        }
+        const requestMonitor: IScoreRequest = {
+          studentId: arrayItem.id,
+          type: Role.Monitor,
+        }
+        const requestTeacher: IScoreRequest = {
+          studentId: arrayItem.id,
+          type: Role.Teacher,
+        }
+        const studentScore = await firstValueFrom<number>(
+          this.client.send({ role: 'mark', cmd: 'get-score' }, requestStudent),
+        )
+        const monitorScore = await firstValueFrom<number>(
+          this.client.send({ role: 'mark', cmd: 'get-score' }, requestMonitor),
+        )
+        const teacherScore = await firstValueFrom<number>(
+          this.client.send({ role: 'mark', cmd: 'get-score' }, requestTeacher),
+        )
         const dataRes: DetailUsersHeadMasterResponseDto = {
           userID: arrayItem.id,
           name: await (await this.findById(arrayItem.id)).name,
           className: await this.classService.findName(arrayItem.classId),
+          studentScore: studentScore,
+          monitorScore: monitorScore,
+          teacherScore: teacherScore,
         }
         dataResponse.push(dataRes)
       }),
@@ -171,9 +232,25 @@ export class DetailUsersService {
     const dataResponse: DetailUsersMonitorResponseDto[] = []
     await Promise.all(
       data.map(async (arrayItem) => {
+        const requestStudent: IScoreRequest = {
+          studentId: arrayItem.users.userID,
+          type: Role.Student,
+        }
+        const requestMonitor: IScoreRequest = {
+          studentId: arrayItem.users.userID,
+          type: Role.Monitor,
+        }
+        const studentScore = await firstValueFrom<number>(
+          this.client.send({ role: 'mark', cmd: 'get-score' }, requestStudent),
+        )
+        const monitorScore = await firstValueFrom<number>(
+          this.client.send({ role: 'mark', cmd: 'get-score' }, requestMonitor),
+        )
         const dataRes: DetailUsersMonitorResponseDto = {
           userID: arrayItem.users.userID,
           name: arrayItem.name,
+          studentScore: studentScore,
+          monitorScore: monitorScore,
         }
         dataResponse.push(dataRes)
       }),

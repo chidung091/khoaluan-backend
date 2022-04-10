@@ -1,3 +1,5 @@
+import { Role } from './detail-users.enum'
+
 export interface IMonitor {
   monitorId: number
   startYear: number
@@ -30,4 +32,9 @@ export interface IHeadMasterSearch {
 export interface IHeadMasterResponse {
   id: number
   classId: number
+}
+
+export interface IScoreRequest {
+  studentId: number
+  type: Role
 }

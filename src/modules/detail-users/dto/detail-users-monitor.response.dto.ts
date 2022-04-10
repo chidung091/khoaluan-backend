@@ -11,4 +11,14 @@ export class DetailUsersMonitorResponseDto {
   @IsNotEmpty()
   @IsString()
   name: string
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  studentScore: number
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  monitorScore: number
 }

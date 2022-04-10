@@ -16,4 +16,19 @@ export class DetailUsersHeadMasterResponseDto {
   @IsNotEmpty()
   @IsString()
   className: string
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  studentScore: number
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  monitorScore: number
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  teacherScore: number
 }

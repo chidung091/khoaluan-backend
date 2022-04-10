@@ -26,3 +26,5 @@ export const API_KEY = getEnv('API_KEY')
 export const MICROSERVICE_HOST = getEnv('MICROSERVICE_HOST')
 export const BE2_SERVICE = getEnv('BE2_SERVICES')
 export const BE_AUTH_SERVICE = getEnv('BE_AUTH_SERVICES')
+
+export const SERVER_URL = getEnv('SERVER_URL')

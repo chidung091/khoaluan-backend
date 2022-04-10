@@ -7,6 +7,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common'
+import { MessagePattern } from '@nestjs/microservices'
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -67,5 +68,10 @@ export class ClassController {
   @Roles(Role.Department)
   async getDetail(@Param('id') id: number) {
     return await this.classService.findDetailClass(id)
+  }
+
+  @MessagePattern({ role: 'class', cmd: 'get-class-name' })
+  async getClassName(id: number) {
+    return this.classService.findName(id)
   }
 }

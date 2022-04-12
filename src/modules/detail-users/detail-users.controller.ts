@@ -105,8 +105,7 @@ export class DetailUsersController {
   }
 
   @Put('/update')
-  @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.Monitor)
+  @UseGuards(AuthGuard)
   @ApiBody({ type: CreateDetailUsersDto })
   @ApiOperation({ summary: 'Get users info' })
   @ApiResponse({ status: 201, description: 'Success', type: CreateUsersDto })

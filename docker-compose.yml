@@ -4,7 +4,7 @@ services:
   point-training-system:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./docker/Dockerfile
     container_name: ${BACK_CONTAINER_NAME}
     ports:
       - 3003:3003

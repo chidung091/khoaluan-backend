@@ -20,6 +20,9 @@ export class DetailUsers {
   @Column()
   name: string
 
+  @Column({ nullable: true })
+  imageUrls: string
+
   @OneToOne(() => Users)
   @JoinColumn()
   users: Users

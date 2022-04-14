@@ -23,9 +23,6 @@ export class Users {
   @Column({ type: 'enum', enum: Role })
   role: Role
 
-  @Column({ nullable: true })
-  imageUrls: string
-
   @OneToMany(() => Department, (project) => project.departmentAdmin)
   departments: Department[]
 

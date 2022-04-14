@@ -57,11 +57,15 @@ export class DetailUsersService {
     const oldData = await this.detailUsersRepository.findOne(data.id)
     const newData = oldData
     newData.birthDate = dto.birthDate
+    if (dto.imageUrls) {
+      newData.imageUrls = dto.imageUrls
+    }
     return this.detailUsersRepository.save({
       ...oldData,
       ...newData,
     })
   }
+
   public async findAllClassByMonitor(id: number) {
     const getActiveTime = await this.timeService.findActive()
 

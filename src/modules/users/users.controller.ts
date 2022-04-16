@@ -55,6 +55,12 @@ export class UsersController {
     return req.user.userID
   }
 
+  @Get('/test')
+  @ApiOperation({ summary: 'Test' })
+  async testApi() {
+    return 'true'
+  }
+
   @MessagePattern({ role: 'user', cmd: 'get-by-id' })
   async getUserById(id: number): Promise<Users> {
     return this.usersService.getByIdForMicroservice(id)

@@ -69,6 +69,25 @@ export class DetailUsersController {
     )
   }
 
+  @Get('/head-master/list-students/assign-monitor/:studentId')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Teacher)
+  @ApiOperation({ summary: 'Assign new monitor for class' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    type: [DetailUsersMonitorResponseDto],
+  })
+  async listStudentsMonitorHeadMaster(
+    @Param('studentId') classId: number,
+    @Req() req,
+  ) {
+    return await this.detailUsersService.updateStudentToMonitor(
+      classId,
+      req.user.userID,
+    )
+  }
+
   @Post('/monitor/list-students')
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Monitor)

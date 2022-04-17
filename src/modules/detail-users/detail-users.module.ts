@@ -17,6 +17,7 @@ import { TimeModule } from '../time/time.module'
     forwardRef(() => ClassModule),
     forwardRef(() => UsersModule),
     forwardRef(() => TimeModule),
+    forwardRef(() => UsersModule),
     ClientsModule.register([
       {
         name: 'RATING_SERVICE',

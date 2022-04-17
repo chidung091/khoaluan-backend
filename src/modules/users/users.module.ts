@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { UsersController } from './users.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -14,7 +14,7 @@ import { BE_AUTH_SERVICE } from 'src/config/secrets'
     TypeOrmModule.forFeature([Users]),
     TypeOrmModule.forFeature([ResetPassword]),
     MailModule,
-    DetailUsersModule,
+    forwardRef(() => DetailUsersModule),
     ClientsModule.register([
       {
         name: 'AUTH_CLIENT',

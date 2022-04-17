@@ -1,11 +1,13 @@
 import { HttpService } from '@nestjs/axios'
-import { Inject, Injectable } from '@nestjs/common'
+import { forwardRef, Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 import { InjectRepository } from '@nestjs/typeorm'
+import { ca } from 'date-fns/locale'
 import { firstValueFrom } from 'rxjs'
 import { Repository } from 'typeorm'
 import { ClassService } from '../class/class.service'
 import { TimeService } from '../time/time.service'
+import { UsersService } from '../users/users.service'
 import { Role } from './detail-users.enum'
 import {
   IHeadMaster,
@@ -30,6 +32,8 @@ export class DetailUsersService {
     private httpService: HttpService,
     private classService: ClassService,
     private timeService: TimeService,
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
   ) {}
 
   public async findById(id: number): Promise<DetailUsers> {
@@ -56,9 +60,14 @@ export class DetailUsersService {
     const data = await this.findById(id)
     const oldData = await this.detailUsersRepository.findOne(data.id)
     const newData = oldData
-    newData.birthDate = dto.birthDate
+    if (dto.imageUrls) {
+      newData.birthDate = dto.birthDate
+    }
     if (dto.imageUrls) {
       newData.imageUrls = dto.imageUrls
+    }
+    if (dto.email) {
+      await this.userService.updateEmail(id, dto.email)
     }
     return this.detailUsersRepository.save({
       ...oldData,
@@ -106,6 +115,27 @@ export class DetailUsersService {
       }),
     )
     return dataResponse
+  }
+
+  public async updateStudentToMonitor(studentId: number, userId: number) {
+    const getActiveTime = await this.timeService.findActive()
+
+    const classIdWh: IHeadMasterSearch = {
+      startYear: getActiveTime.startYear,
+      endYear: getActiveTime.endYear,
+      semester: getActiveTime.semester,
+      headMasterId: userId,
+      studentId: studentId,
+    }
+
+    const classWh = await firstValueFrom<IHeadMasterResponse[]>(
+      this.client.send(
+        { role: 'class', cmd: 'get-student-monitor-headmaster' },
+        classIdWh,
+      ),
+    )
+    console.log(classWh)
+    return classWh
   }
 
   public async findAllStudentByHeadMaster(classId: number, id: number) {

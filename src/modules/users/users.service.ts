@@ -181,4 +181,17 @@ export class UsersService {
       ...dataNew,
     })
   }
+
+  public async updateEmail(userId: number, email: string) {
+    const data = await this.usersRepository.findOne(userId)
+    if (!data) {
+      throw new NotFoundException('User not found')
+    }
+    const dataNew = data
+    dataNew.email = email
+    return this.usersRepository.save({
+      ...data,
+      ...dataNew,
+    })
+  }
 }

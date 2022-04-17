@@ -193,6 +193,7 @@ export class DetailUsersService {
         const teacherScore = await firstValueFrom<number>(
           this.client.send({ role: 'mark', cmd: 'get-score' }, requestTeacher),
         )
+        const role = await this.userService.getRole(arrayItem.id)
         const dataRes: DetailUsersHeadMasterResponseDto = {
           userID: arrayItem.id,
           name: await (await this.findById(arrayItem.id)).name,
@@ -200,6 +201,7 @@ export class DetailUsersService {
           studentScore: studentScore,
           monitorScore: monitorScore,
           teacherScore: teacherScore,
+          role: role,
         }
         dataResponse.push(dataRes)
       }),
@@ -247,6 +249,7 @@ export class DetailUsersService {
         const teacherScore = await firstValueFrom<number>(
           this.client.send({ role: 'mark', cmd: 'get-score' }, requestTeacher),
         )
+        const role = await this.userService.getRole(arrayItem.id)
         const dataRes: DetailUsersHeadMasterResponseDto = {
           userID: arrayItem.id,
           name: await (await this.findById(arrayItem.id)).name,
@@ -254,6 +257,7 @@ export class DetailUsersService {
           studentScore: studentScore,
           monitorScore: monitorScore,
           teacherScore: teacherScore,
+          role: role,
         }
         dataResponse.push(dataRes)
       }),

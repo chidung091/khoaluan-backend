@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { Role } from 'src/modules/users/users.enum'
 
 export class DetailUsersHeadMasterResponseDto {
   @ApiProperty()
@@ -31,4 +32,7 @@ export class DetailUsersHeadMasterResponseDto {
   @IsNotEmpty()
   @IsNumber()
   teacherScore: number
+
+  @ApiProperty({ enum: Role })
+  role: Role
 }

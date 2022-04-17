@@ -196,7 +196,9 @@ export class UsersService {
   }
 
   public async updateRole(userId: number, role: Role) {
+    console.log(userId)
     const data = await this.usersRepository.findOne(userId)
+    console.log(data)
     if (!data) {
       throw new NotFoundException('User not found')
     }

@@ -139,6 +139,7 @@ export class DetailUsersService {
         classIdWh,
       ),
     )
+    const oldMonitorId = classWh.oldMonitorId
     const classNewWh = await firstValueFrom<IStudentMonitorResponse>(
       this.client.send(
         { role: 'class', cmd: 'update-student-monitor-headmaster' },
@@ -148,8 +149,8 @@ export class DetailUsersService {
     if (!classNewWh) {
       throw new BadRequestException('Error')
     }
-    await this.userService.updateRole(classWh.id, Role.Monitor)
-    await this.userService.updateRole(classWh.oldMonitorId, Role.Student)
+    await this.userService.updateRole(studentId, Role.Monitor)
+    await this.userService.updateRole(oldMonitorId, Role.Student)
     return 'Success'
   }
 

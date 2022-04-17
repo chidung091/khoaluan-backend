@@ -34,6 +34,12 @@ export interface IHeadMasterResponse {
   classId: number
 }
 
+export interface IStudentMonitorResponse {
+  id: number
+  classId: number
+  oldMonitorId: number
+}
+
 export interface IScoreRequest {
   studentId: number
   type: Role

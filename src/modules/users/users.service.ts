@@ -194,4 +194,17 @@ export class UsersService {
       ...dataNew,
     })
   }
+
+  public async updateRole(userId: number, role: Role) {
+    const data = await this.usersRepository.findOne(userId)
+    if (!data) {
+      throw new NotFoundException('User not found')
+    }
+    const dataNew = data
+    dataNew.role = role
+    return this.usersRepository.save({
+      ...data,
+      ...dataNew,
+    })
+  }
 }

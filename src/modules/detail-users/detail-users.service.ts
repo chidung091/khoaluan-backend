@@ -1,8 +1,12 @@
 import { HttpService } from '@nestjs/axios'
-import { forwardRef, Inject, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 import { InjectRepository } from '@nestjs/typeorm'
-import { ca } from 'date-fns/locale'
 import { firstValueFrom } from 'rxjs'
 import { Repository } from 'typeorm'
 import { ClassService } from '../class/class.service'
@@ -16,6 +20,7 @@ import {
   IMonitor,
   IMonitorSearch,
   IScoreRequest,
+  IStudentMonitorResponse,
 } from './detail-users.interface'
 import { DetailUsersHeadMasterResponseDto } from './dto/detail-users-headmaster.response.dto'
 import { DetailUsersMonitorResponseDto } from './dto/detail-users-monitor.response.dto'
@@ -128,14 +133,24 @@ export class DetailUsersService {
       studentId: studentId,
     }
 
-    const classWh = await firstValueFrom<IHeadMasterResponse[]>(
+    const classWh = await firstValueFrom<IStudentMonitorResponse>(
       this.client.send(
         { role: 'class', cmd: 'get-student-monitor-headmaster' },
         classIdWh,
       ),
     )
-    console.log(classWh)
-    return classWh
+    const classNewWh = await firstValueFrom<IStudentMonitorResponse>(
+      this.client.send(
+        { role: 'class', cmd: 'update-student-monitor-headmaster' },
+        classIdWh,
+      ),
+    )
+    if (!classNewWh) {
+      throw new BadRequestException('Error')
+    }
+    await this.userService.updateRole(classWh.id, Role.Monitor)
+    await this.userService.updateRole(classWh.oldMonitorId, Role.Student)
+    return 'Success'
   }
 
   public async findAllStudentByHeadMaster(classId: number, id: number) {

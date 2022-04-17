@@ -59,6 +59,14 @@ export class TimeController {
     return this.timeService.get()
   }
 
+  @Get('/active')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Tìm mốc thời gian' })
+  @ApiResponse({ status: 200, description: 'Success', type: [TimeDto] })
+  async getActiveTime() {
+    return this.timeService.findActive()
+  }
+
   @Post('/:id/status')
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)

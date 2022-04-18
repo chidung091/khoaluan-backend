@@ -1,6 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
+import { UsersService } from '../users/users.service'
+import { CreateTableTeacherDto } from './dto/create-teacher.dto'
 import { Teachers } from './entity/teachers.entity'
 
 @Injectable()
@@ -8,6 +15,8 @@ export class TeachersService {
   constructor(
     @InjectRepository(Teachers)
     private teachersRepository: Repository<Teachers>,
+    @Inject(forwardRef(() => UsersService))
+    private usersService: UsersService,
   ) {}
 
   public async findById(id: number): Promise<Teachers> {
@@ -37,5 +46,13 @@ export class TeachersService {
       throw new NotFoundException('NOT_FOUND_TEACHERS')
     }
     return data.teacherName
+  }
+  public async createTeacher(dto: CreateTableTeacherDto, id: number) {
+    const userData = await this.usersService.getById(id)
+    const create = {
+      ...dto,
+      teacherUsers: userData,
+    }
+    return this.teachersRepository.save(create)
   }
 }

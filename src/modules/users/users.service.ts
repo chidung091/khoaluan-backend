@@ -38,6 +38,16 @@ export class UsersService {
     return this.usersRepository.save(users)
   }
 
+  public async createTeacher(dto: CreateUsersDto): Promise<Users> {
+    const hash = await bcrypt.hash(dto.password, 10)
+    dto.password = hash
+    const users = {
+      ...dto,
+      role: Role.Teacher,
+    }
+    return this.usersRepository.save(users)
+  }
+
   public async getById(id: number): Promise<Users> {
     const user = await this.usersRepository.findOne(id)
     if (user) {

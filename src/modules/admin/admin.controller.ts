@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -11,6 +11,11 @@ import { RoleGuard } from 'src/guards/role.guard2'
 import { AuthGuard } from '../../guards/auth.guard'
 import { Role } from '../users/users.enum'
 import { AdminService } from './admin.service'
+import { CreateTeacherDto } from './dto/create-teacher.dto'
+import {
+  CreateTeacherResponseDto,
+  TeacherResponse,
+} from './dto/get-list-teacher.response.dto'
 import { getUserByRoleDto } from './dto/get-users-role.dto'
 
 @ApiBearerAuth()
@@ -27,5 +32,27 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Success' })
   async logIn(dto: getUserByRoleDto) {
     return await this.adminService.getUserByRole(dto.role)
+  }
+
+  @Get('/list-teacher')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Xem danh sách giáo viên chủ nhiệm' })
+  @ApiResponse({ status: 200, description: 'Success', type: [TeacherResponse] })
+  async getTeacher() {
+    return this.adminService.getListTeacher()
+  }
+
+  @Post('/create-teacher')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Xem danh sách giáo viên chủ nhiệm' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    type: CreateTeacherResponseDto,
+  })
+  async createTeacher(@Body() dto: CreateTeacherDto) {
+    return this.adminService.createTeacher(dto)
   }
 }

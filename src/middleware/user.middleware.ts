@@ -11,6 +11,9 @@ export class UserMiddleware implements NestMiddleware {
   }
 
   async getUserSession(req: Request): Promise<Partial<IJwtPayload> | null> {
+    if (!req.headers['authorization']) {
+      return
+    }
     const token = req.headers['authorization']?.split(' ')[1]
     const b = jwt_decode(token)
     if (!token) {

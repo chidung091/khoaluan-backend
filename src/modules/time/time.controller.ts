@@ -30,7 +30,7 @@ import { AuthGuard } from 'src/guards/auth.guard'
 export class TimeController {
   constructor(private readonly timeService: TimeService) {}
 
-  @Post()
+  @Post('')
   @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
@@ -60,7 +60,7 @@ export class TimeController {
     return this.timeService.findById(id)
   }
 
-  @Get()
+  @Get('')
   @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)

@@ -20,18 +20,18 @@ import { CreateTimeDto } from './dto/create-time.dto'
 import { TimeDto } from './dto/time.dto'
 import { Role } from '../users/users.enum'
 import { UpdateTime } from './dto/update-time.dto'
-import { AuthGuard } from '../../guards/auth.guard'
 import { RoleGuard } from 'src/guards/role.guard2'
 import { Roles } from 'src/decorators/roles.decorator'
 import { MessagePattern } from '@nestjs/microservices'
+import { AuthGuard } from 'src/guards/auth.guard'
 
-@ApiBearerAuth()
 @ApiTags('time')
 @Controller('time')
 export class TimeController {
   constructor(private readonly timeService: TimeService) {}
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Tạo mốc thời gian mới' })
@@ -41,7 +41,17 @@ export class TimeController {
     return await this.timeService.create(time)
   }
 
+  @ApiBearerAuth()
+  @Get('/active')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Tìm mốc thời gian' })
+  @ApiResponse({ status: 200, description: 'Success', type: [TimeDto] })
+  async getActiveTime() {
+    return this.timeService.findActive()
+  }
+
   @Get('/:id')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Tìm mốc thời gian theo id' })
@@ -51,6 +61,7 @@ export class TimeController {
   }
 
   @Get()
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Tìm mốc thời gian' })
@@ -59,14 +70,7 @@ export class TimeController {
     return this.timeService.get()
   }
 
-  @Get('/active')
-  @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Tìm mốc thời gian' })
-  @ApiResponse({ status: 200, description: 'Success', type: [TimeDto] })
-  async getActiveTime() {
-    return this.timeService.findActive()
-  }
-
+  @ApiBearerAuth()
   @Post('/:id/status')
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
@@ -77,6 +81,7 @@ export class TimeController {
   }
 
   @Put('/:id')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Sửa mốc thời gian cực chuẩn nè' })
@@ -87,6 +92,7 @@ export class TimeController {
   }
 
   @Delete('/:id')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Sửa mốc thời gian' })

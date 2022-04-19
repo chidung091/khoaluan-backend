@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
+import { DepartmentService } from '../department/department.service'
 import { UsersService } from '../users/users.service'
 import { CreateTableTeacherDto } from './dto/create-teacher.dto'
 import { Teachers } from './entity/teachers.entity'
@@ -17,6 +18,8 @@ export class TeachersService {
     private teachersRepository: Repository<Teachers>,
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
+    @Inject(forwardRef(() => DepartmentService))
+    private departmentService: DepartmentService,
   ) {}
 
   public async findById(id: number): Promise<Teachers> {
@@ -54,5 +57,16 @@ export class TeachersService {
       teacherUsers: userData,
     }
     return this.teachersRepository.save(create)
+  }
+
+  public async assignDepartment(userID: number, departmentId: number) {
+    const data = await this.findById(userID)
+    const newData = data
+    const department = await this.departmentService.findDepartment(departmentId)
+    newData.teacherDepartment = department
+    return this.teachersRepository.save({
+      ...data,
+      ...newData,
+    })
   }
 }

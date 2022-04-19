@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -54,5 +62,21 @@ export class AdminController {
   })
   async createTeacher(@Body() dto: CreateTeacherDto) {
     return this.adminService.createTeacher(dto)
+  }
+
+  @Post('/assign-department-teacher/:departmentId')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Gán giáo viên vào khoa' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    type: CreateTeacherResponseDto,
+  })
+  async assignTeacher(@Req() req, @Param('departmentId') departmentId: number) {
+    return this.adminService.assignDepartmentTeacher(
+      req.user.userID,
+      departmentId,
+    )
   }
 }

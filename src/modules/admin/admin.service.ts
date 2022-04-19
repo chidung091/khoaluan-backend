@@ -1,5 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common'
 import { ClassService } from '../class/class.service'
+import { DepartmentService } from '../department/department.service'
 import { CreateTableTeacherDto } from '../teachers/dto/create-teacher.dto'
 import { TeachersService } from '../teachers/teachers.service'
 import { CreateUsersDto } from '../users/dto/create-users.dto'
@@ -13,6 +19,8 @@ export class AdminService {
     private readonly usersService: UsersService,
     private readonly classService: ClassService,
     private readonly teacherService: TeachersService,
+    @Inject(forwardRef(() => DepartmentService))
+    private departmentService: DepartmentService,
   ) {}
 
   public async getUserByRole(role: Role) {
@@ -79,5 +87,9 @@ export class AdminService {
       teacherNumber: createTeacher.teacherNumber,
     }
     return dataObject
+  }
+
+  public async assignDepartmentTeacher(userID: number, departmentId: number) {
+    return this.teacherService.assignDepartment(userID, departmentId)
   }
 }

@@ -15,7 +15,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { Roles } from 'src/decorators/roles.decorator'
-import { RoleGuard } from 'src/guards/role.guard2'
+import { RoleGuard } from 'src/guards/role.guard'
 import { AuthGuard } from '../../guards/auth.guard'
 import { Role } from '../users/users.enum'
 import { AdminService } from './admin.service'

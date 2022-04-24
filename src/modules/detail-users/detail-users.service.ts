@@ -7,21 +7,11 @@ import {
 } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 import { InjectRepository } from '@nestjs/typeorm'
-import { firstValueFrom } from 'rxjs'
 import { Repository } from 'typeorm'
 import { ClassService } from '../class/class.service'
 import { TimeService } from '../time/time.service'
 import { UsersService } from '../users/users.service'
 import { Role } from './detail-users.enum'
-import {
-  IHeadMaster,
-  IHeadMasterResponse,
-  IHeadMasterSearch,
-  IMonitor,
-  IMonitorSearch,
-  IScoreRequest,
-  IStudentMonitorResponse,
-} from './detail-users.interface'
 import { DetailUsersHeadMasterResponseDto } from './dto/detail-users-headmaster.response.dto'
 import { DetailUsersMonitorResponseDto } from './dto/detail-users-monitor.response.dto'
 import { CreateDetailUsersDto } from './dto/detail-users.dto'
@@ -54,6 +44,7 @@ export class DetailUsersService {
       .createQueryBuilder('detail_users')
       .leftJoinAndSelect('detail_users.usersClass', 'classId')
       .where('detail_users.usersClassClassId = :id', { id: id })
+      .orderBy('detail_users.createdAt')
       .getMany()
   }
 
@@ -64,6 +55,10 @@ export class DetailUsersService {
       .where('detail_users.usersUserID IN (:id)', { id: ids })
       .orderBy('detail_users.createdAt')
       .getMany()
+  }
+
+  public async findByNewIds(ids: Array<number>): Promise<DetailUsers[]> {
+    return this.detailUsersRepository.findByIds(ids)
   }
 
   public async update(
@@ -89,40 +84,23 @@ export class DetailUsersService {
   }
 
   public async findAllClassByMonitor(id: number) {
-    const getActiveTime = await this.timeService.findActive()
-
-    const classIdWh: IMonitor = {
-      monitorId: id,
-      startYear: getActiveTime.startYear,
-      endYear: getActiveTime.endYear,
-      semester: getActiveTime.semester,
-    }
-    const classWh = await firstValueFrom<[number]>(
-      this.client.send({ role: 'class', cmd: 'get-class-monitor' }, classIdWh),
+    const dataClass = await this.classService.findAllClassByMonitor(id)
+    const dataStudent = await this.findByClassId(dataClass.classId)
+    const dataArray = []
+    await Promise.all(
+      dataStudent.map(async (arrayItem) => {
+        dataArray.push(arrayItem.id)
+      }),
     )
-    const data = await this.findByIds(classWh)
+    const data = await this.findByNewIds(dataArray)
     const dataResponse: DetailUsersMonitorResponseDto[] = []
     await Promise.all(
       data.map(async (arrayItem) => {
-        const requestStudent: IScoreRequest = {
-          studentId: arrayItem.users.userID,
-          type: Role.Student,
-        }
-        const requestMonitor: IScoreRequest = {
-          studentId: arrayItem.users.userID,
-          type: Role.Monitor,
-        }
-        const studentScore = await firstValueFrom<number>(
-          this.client.send({ role: 'mark', cmd: 'get-score' }, requestStudent),
-        )
-        const monitorScore = await firstValueFrom<number>(
-          this.client.send({ role: 'mark', cmd: 'get-score' }, requestMonitor),
-        )
         const dataRes: DetailUsersMonitorResponseDto = {
-          userID: arrayItem.users.userID,
+          userID: arrayItem.usersUserID,
           name: arrayItem.name,
-          studentScore: studentScore,
-          monitorScore: monitorScore,
+          studentScore: 0,
+          monitorScore: 0,
         }
         dataResponse.push(dataRes)
       }),
@@ -131,192 +109,90 @@ export class DetailUsersService {
   }
 
   public async updateStudentToMonitor(studentId: number, userId: number) {
-    const getActiveTime = await this.timeService.findActive()
-
-    const classIdWh: IHeadMasterSearch = {
-      startYear: getActiveTime.startYear,
-      endYear: getActiveTime.endYear,
-      semester: getActiveTime.semester,
-      headMasterId: userId,
-      studentId: studentId,
-    }
-
-    const classWh = await firstValueFrom<IStudentMonitorResponse>(
-      this.client.send(
-        { role: 'class', cmd: 'get-student-monitor-headmaster' },
-        classIdWh,
-      ),
+    const data = await this.classService.findAllClassByHeadMaster(userId)
+    const findClassId = await this.findById(studentId)
+    findClassId.usersClassClassId
+    await Promise.all(
+      data.map(async (arrayItem) => {
+        if (arrayItem.classId === findClassId.usersClassClassId) {
+          await this.userService.updateRole(studentId, Role.Monitor)
+          await this.userService.updateRole(arrayItem.monitorId, Role.Student)
+          await this.classService.updateClassMonitor(
+            arrayItem.classId,
+            studentId,
+          )
+          return 'Success'
+        }
+      }),
     )
-    const oldMonitorId = classWh.oldMonitorId
-    const classNewWh = await firstValueFrom<IStudentMonitorResponse>(
-      this.client.send(
-        { role: 'class', cmd: 'update-student-monitor-headmaster' },
-        classIdWh,
-      ),
-    )
-    if (!classNewWh) {
-      throw new BadRequestException('Error')
-    }
-    await this.userService.updateRole(studentId, Role.Monitor)
-    await this.userService.updateRole(oldMonitorId, Role.Student)
-    return 'Success'
+    return 'Fail'
   }
 
   public async findAllStudentByHeadMaster(classId: number, id: number) {
-    const getActiveTime = await this.timeService.findActive()
-
-    const classIdWh: IHeadMaster = {
-      startYear: getActiveTime.startYear,
-      endYear: getActiveTime.endYear,
-      semester: getActiveTime.semester,
-      headMasterId: id,
-      classId: classId,
-    }
-    const classWh = await firstValueFrom<IHeadMasterResponse[]>(
-      this.client.send(
-        { role: 'class', cmd: 'get-class-headmaster' },
-        classIdWh,
-      ),
-    )
+    const classNew = await this.classService.findAllClassByHeadMaster(id)
     const dataResponse: DetailUsersHeadMasterResponseDto[] = []
     await Promise.all(
-      classWh.map(async (arrayItem) => {
-        const requestStudent: IScoreRequest = {
-          studentId: arrayItem.id,
-          type: Role.Student,
-        }
-        const requestMonitor: IScoreRequest = {
-          studentId: arrayItem.id,
-          type: Role.Monitor,
-        }
-        const requestTeacher: IScoreRequest = {
-          studentId: arrayItem.id,
-          type: Role.Teacher,
-        }
-        const studentScore = await firstValueFrom<number>(
-          this.client.send({ role: 'mark', cmd: 'get-score' }, requestStudent),
+      classNew.map(async (arrayItem) => {
+        const dataStudent = await this.findByClassId(arrayItem.classId)
+        await Promise.all(
+          dataStudent.map(async (item) => {
+            const role = await this.userService.getRole(item.usersUserID)
+            const dataRes: DetailUsersHeadMasterResponseDto = {
+              userID: item.usersUserID,
+              name: await (await this.findById(item.usersUserID)).name,
+              className: await this.classService.findName(arrayItem.classId),
+              studentScore: 0,
+              monitorScore: 0,
+              teacherScore: 0,
+              role: role,
+            }
+            dataResponse.push(dataRes)
+          }),
         )
-        const monitorScore = await firstValueFrom<number>(
-          this.client.send({ role: 'mark', cmd: 'get-score' }, requestMonitor),
-        )
-        const teacherScore = await firstValueFrom<number>(
-          this.client.send({ role: 'mark', cmd: 'get-score' }, requestTeacher),
-        )
-        const role = await this.userService.getRole(arrayItem.id)
-        const dataRes: DetailUsersHeadMasterResponseDto = {
-          userID: arrayItem.id,
-          name: await (await this.findById(arrayItem.id)).name,
-          className: await this.classService.findName(arrayItem.classId),
-          studentScore: studentScore,
-          monitorScore: monitorScore,
-          teacherScore: teacherScore,
-          role: role,
-        }
-        dataResponse.push(dataRes)
       }),
     )
     return dataResponse
   }
 
   async findStudentIdHeadmaster(studentId: number, id: number) {
-    const getActiveTime = await this.timeService.findActive()
-
-    const classIdWh: IHeadMasterSearch = {
-      startYear: getActiveTime.startYear,
-      endYear: getActiveTime.endYear,
-      semester: getActiveTime.semester,
-      headMasterId: id,
-      studentId: studentId,
+    if (!studentId) {
+      return this.classService.findAllClassByDepartmemt(id)
     }
-    const classWh = await firstValueFrom<IHeadMasterResponse[]>(
-      this.client.send(
-        { role: 'class', cmd: 'get-student-list-headmaster' },
-        classIdWh,
-      ),
-    )
+    const data = await this.findById(studentId)
+    if (!data) {
+      throw new BadRequestException(`can't find data`)
+    }
     const dataResponse: DetailUsersHeadMasterResponseDto[] = []
-    await Promise.all(
-      classWh.map(async (arrayItem) => {
-        const requestStudent: IScoreRequest = {
-          studentId: arrayItem.id,
-          type: Role.Student,
-        }
-        const requestMonitor: IScoreRequest = {
-          studentId: arrayItem.id,
-          type: Role.Monitor,
-        }
-        const requestTeacher: IScoreRequest = {
-          studentId: arrayItem.id,
-          type: Role.Teacher,
-        }
-        const studentScore = await firstValueFrom<number>(
-          this.client.send({ role: 'mark', cmd: 'get-score' }, requestStudent),
-        )
-        const monitorScore = await firstValueFrom<number>(
-          this.client.send({ role: 'mark', cmd: 'get-score' }, requestMonitor),
-        )
-        const teacherScore = await firstValueFrom<number>(
-          this.client.send({ role: 'mark', cmd: 'get-score' }, requestTeacher),
-        )
-        const role = await this.userService.getRole(arrayItem.id)
-        const dataRes: DetailUsersHeadMasterResponseDto = {
-          userID: arrayItem.id,
-          name: await (await this.findById(arrayItem.id)).name,
-          className: await this.classService.findName(arrayItem.classId),
-          studentScore: studentScore,
-          monitorScore: monitorScore,
-          teacherScore: teacherScore,
-          role: role,
-        }
-        dataResponse.push(dataRes)
-      }),
-    )
+    const role = await this.userService.getRole(data.usersUserID)
+    const dataRes: DetailUsersHeadMasterResponseDto = {
+      userID: data.usersUserID,
+      name: data.name,
+      className: data.usersClass.className,
+      studentScore: 0,
+      monitorScore: 0,
+      teacherScore: 0,
+      role: role,
+    }
+    dataResponse.push(dataRes)
     return dataResponse
   }
 
   async findStudentIdMonitor(studentId: number, id: number) {
-    const getActiveTime = await this.timeService.findActive()
-
-    const classIdWh: IMonitorSearch = {
-      monitorId: id,
-      startYear: getActiveTime.startYear,
-      endYear: getActiveTime.endYear,
-      semester: getActiveTime.semester,
-      studentId: studentId,
+    if (!studentId) {
+      return this.classService.findAllClassByMonitor(id)
     }
-    const classWh = await firstValueFrom<[number]>(
-      this.client.send(
-        { role: 'class', cmd: 'get-student-list-monitor' },
-        classIdWh,
-      ),
-    )
-    const data = await this.findByIds(classWh)
+    const data = await this.findById(studentId)
+    if (!data) {
+      throw new BadRequestException(`can't find data`)
+    }
     const dataResponse: DetailUsersMonitorResponseDto[] = []
-    await Promise.all(
-      data.map(async (arrayItem) => {
-        const requestStudent: IScoreRequest = {
-          studentId: arrayItem.users.userID,
-          type: Role.Student,
-        }
-        const requestMonitor: IScoreRequest = {
-          studentId: arrayItem.users.userID,
-          type: Role.Monitor,
-        }
-        const studentScore = await firstValueFrom<number>(
-          this.client.send({ role: 'mark', cmd: 'get-score' }, requestStudent),
-        )
-        const monitorScore = await firstValueFrom<number>(
-          this.client.send({ role: 'mark', cmd: 'get-score' }, requestMonitor),
-        )
-        const dataRes: DetailUsersMonitorResponseDto = {
-          userID: arrayItem.users.userID,
-          name: arrayItem.name,
-          studentScore: studentScore,
-          monitorScore: monitorScore,
-        }
-        dataResponse.push(dataRes)
-      }),
-    )
+    const dataRes: DetailUsersMonitorResponseDto = {
+      userID: data.usersUserID,
+      name: data.name,
+      studentScore: 0,
+      monitorScore: 0,
+    }
+    dataResponse.push(dataRes)
     return dataResponse
   }
 }

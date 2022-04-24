@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   forwardRef,
   Inject,
   Injectable,
@@ -105,7 +106,7 @@ export class ClassService {
   }
 
   public async findAllClassByHeadMaster(id: number) {
-    const data = await this.classRepository.findOne({ headMasterId: id })
+    const data = await this.classRepository.find({ headMasterId: id })
     if (!data) {
       throw new NotFoundException('NOT_FOUND_CLASS')
     }
@@ -129,5 +130,18 @@ export class ClassService {
       }),
     )
     return dataResponse
+  }
+
+  public async updateClassMonitor(classId: number, newMonitorId: number) {
+    const data = await this.classRepository.findOne(classId)
+    if (!data) {
+      throw new BadRequestException('BAD')
+    }
+    const dataNew = data
+    dataNew.monitorId = newMonitorId
+    return this.classRepository.save({
+      ...data, // existing fields
+      ...dataNew, // updated fields
+    })
   }
 }

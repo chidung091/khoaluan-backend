@@ -28,10 +28,10 @@ export class Class {
   @RelationId((cla: Class) => cla.classDepartment)
   classDepartmentDepartmentId: number
 
-  @Column({ type: 'int' })
+  @Column()
   headMasterId: number
 
-  @Column({ type: 'int' })
+  @Column()
   monitorId: number
 
   @ManyToOne(() => Course, (department) => department.classes)
@@ -42,7 +42,7 @@ export class Class {
   classCourseCourseId: number
 
   @OneToMany(() => DetailUsers, (project) => project.usersClass)
-  classUsers: DetailUsers[]
+  users: DetailUsers[]
 
   @CreateDateColumn({
     type: 'timestamp',

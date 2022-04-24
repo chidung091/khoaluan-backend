@@ -26,16 +26,19 @@ export class DetailUsers {
   @Column({ nullable: true })
   imageUrls: string
 
-  @OneToOne(() => Users)
-  @JoinColumn()
-  users: Users
-
-  @ManyToOne(() => Class, (department) => department.classUsers)
+  @ManyToOne(() => Class, (department) => department.users)
   @JoinColumn()
   usersClass: Class
 
   @RelationId((cla: DetailUsers) => cla.usersClass)
   usersClassClassId: number
+
+  @OneToOne(() => Users)
+  @JoinColumn()
+  users: Users
+
+  @RelationId((cla: DetailUsers) => cla.users)
+  usersUserID: number
 
   @CreateDateColumn({
     type: 'timestamp',

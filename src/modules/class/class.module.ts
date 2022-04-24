@@ -11,6 +11,7 @@ import { TeachersModule } from '../teachers/teachers.module'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { BE2_SERVICE, BE_AUTH_SERVICE } from 'src/config/secrets'
 import { TimeModule } from '../time/time.module'
+import { DetailUsersModule } from '../detail-users/detail-users.module'
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { TimeModule } from '../time/time.module'
     TypeOrmModule.forFeature([Class]),
     HttpModule,
     forwardRef(() => UsersModule),
+    forwardRef(() => DetailUsersModule),
     forwardRef(() => DepartmentModule),
     forwardRef(() => TimeModule),
     CourseModule,

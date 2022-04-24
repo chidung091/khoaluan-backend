@@ -49,7 +49,7 @@ export class PointFrameController {
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Sửa mốc thời gian cực chuẩn nè' })
-  @ApiBody({ type: UpdateTime })
+  @ApiBody({ type: CreatePointFrameDto })
   async update(
     @Param('id') id: number,
     @Body() timeUpdate: CreatePointFrameDto,

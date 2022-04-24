@@ -33,7 +33,7 @@ export class ClassController {
   @ApiOperation({ summary: 'Create Class' })
   @ApiOkResponse({ type: CreateClassDto })
   async create(@Body() dto: CreateClassDto) {
-    return await this.classService.createClass(dto)
+    return await this.classService.createNewClass(dto)
   }
 
   @Get()

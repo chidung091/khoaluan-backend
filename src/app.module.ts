@@ -21,6 +21,7 @@ import { ClassModule } from './modules/class/class.module'
 import { TeachersModule } from './modules/teachers/teachers.module'
 import { WebhookModule } from './modules/webhook/webhook.module'
 import { UserMiddleware } from './middleware/user.middleware'
+import { PointFrameModule } from './modules/point-frame/point-frame.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { UserMiddleware } from './middleware/user.middleware'
     ClassModule,
     TeachersModule,
     WebhookModule,
+    PointFrameModule,
   ],
   controllers: [AppController],
   providers: [AppService],

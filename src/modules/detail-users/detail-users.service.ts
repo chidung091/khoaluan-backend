@@ -49,6 +49,14 @@ export class DetailUsersService {
       .getOne()
   }
 
+  public async findByClassId(id: number): Promise<DetailUsers[]> {
+    return this.detailUsersRepository
+      .createQueryBuilder('detail_users')
+      .leftJoinAndSelect('detail_users.usersClass', 'classId')
+      .where('detail_users.usersClassClassId = :id', { id: id })
+      .getMany()
+  }
+
   public async findByIds(ids: Array<number>): Promise<DetailUsers[]> {
     return this.detailUsersRepository
       .createQueryBuilder('detail_users')

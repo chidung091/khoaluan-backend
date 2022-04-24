@@ -77,6 +77,10 @@ export class DepartmentService {
     return data
   }
 
+  public async findDepartmentName(departmentId: number) {
+    return this.departmentRepository.findOne(departmentId)
+  }
+
   public async create(dto: CreateDepartmentDto): Promise<Department> {
     const user = await this.userService.getById(dto.departmentAdminUserID)
     if (!user) {

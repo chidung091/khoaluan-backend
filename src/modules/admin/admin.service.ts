@@ -46,21 +46,19 @@ export class AdminService {
         const dataTeachers = await this.teacherService.findById(
           singleTeacher.userID,
         )
-        console.log(dataTeachers)
         let haveClass = false
-        if (dataClass) {
+        if (dataClass.length > 0) {
           haveClass = true
         }
+        const data = await this.departmentService.findDepartmentName(
+          dataTeachers.teacherDepartmentDepartmentId,
+        )
         const dataObject = {
           teacherId: dataTeachers.teacherId,
           userID: singleTeacher.userID,
           teacherName: dataTeachers.teacherName,
           teacherNumber: dataTeachers.teacherNumber,
-          teacherDepartmentName: (
-            await this.departmentService.findById(
-              dataTeachers.teacherDepartmentDepartmentId,
-            )
-          ).departmentName,
+          teacherDepartmentName: data.departmentName,
           haveClass: haveClass,
           class: dataClass,
         }

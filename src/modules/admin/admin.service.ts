@@ -36,7 +36,6 @@ export class AdminService {
   }
   public async getListTeacher() {
     const dataTeacher = await this.usersService.getListByRole(Role.Teacher)
-    console.log(dataTeacher)
     const dataResponse = []
     await Promise.all(
       dataTeacher.map(async (singleTeacher) => {

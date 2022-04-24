@@ -1,24 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { IsOptional } from 'class-validator'
 import { IsArray, IsNumber, IsString } from 'src/decorators/validators'
 
 export class CreateClassDto {
   @ApiProperty()
   @IsNumber({ notEmpty: true })
-  semester: number
-
-  @ApiProperty()
-  @IsNumber({ notEmpty: true })
-  startYear: number
-
-  @ApiProperty()
-  @IsNumber({ notEmpty: true })
-  endYear: number
-
-  @ApiProperty()
-  @IsNumber({ notEmpty: true })
   monitorId: number
 
   @ApiProperty()
+  @IsOptional()
   @IsNumber({ notEmpty: true })
   classId: number
 

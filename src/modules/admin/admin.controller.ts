@@ -51,6 +51,13 @@ export class AdminController {
     return this.adminService.getListTeacher()
   }
 
+  @Get('/list-student')
+  @ApiOperation({ summary: 'Xem danh sách sinh viên' })
+  @ApiResponse({ status: 200, description: 'Success', type: [TeacherResponse] })
+  async getStudent() {
+    return this.adminService.getListStudent()
+  }
+
   @Post('/create-teacher')
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)

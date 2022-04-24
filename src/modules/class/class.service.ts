@@ -55,16 +55,19 @@ export class ClassService {
   }
 
   public async createClass(dto: CreateClassDto) {
+    const getActiveTime = await this.timeService.findActive()
+
     const studentWh: IStudents = {
-      semester: dto.semester,
+      semester: getActiveTime.semester,
       studentsIds: dto.studentsIds,
-      startYear: dto.startYear,
-      endYear: dto.endYear,
+      startYear: getActiveTime.startYear,
+      endYear: getActiveTime.endYear,
       headMasterId: dto.headMasterId,
       monitorId: dto.monitorId,
     }
+    const data = await this.classRepository.save(dto)
     const classWh: ICreateClassWebhook = {
-      classId: dto.classId,
+      classId: data.classId,
       courseId: dto.classCourseCourseId,
       students: [studentWh],
     }
@@ -72,7 +75,6 @@ export class ClassService {
       { role: 'class', cmd: 'create' },
       classWh,
     )
-    await this.classRepository.save(dto)
     return user
   }
 

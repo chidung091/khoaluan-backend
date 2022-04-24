@@ -27,6 +27,12 @@ export class AdminService {
     return this.usersService.getListByRole(role)
   }
 
+  public async getListStudent() {
+    const dataStudent = await this.usersService.getListByRole(Role.Student)
+    const dataMonitor = await this.usersService.getListByRole(Role.Monitor)
+    console.log(dataStudent)
+    return dataStudent
+  }
   public async getListTeacher() {
     const dataTeacher = await this.usersService.getListByRole(Role.Teacher)
     console.log(dataTeacher)

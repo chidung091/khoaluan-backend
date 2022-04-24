@@ -64,7 +64,7 @@ export class DepartmentService {
     return dataResponse
   }
 
-  private async findById(id: number): Promise<Department> {
+  public async findById(id: number): Promise<Department> {
     return this.departmentRepository
       .createQueryBuilder('department')
       .leftJoinAndSelect('department.departmentAdmin', 'userID')

@@ -55,7 +55,11 @@ export class AdminService {
           userID: singleTeacher.userID,
           teacherName: dataTeachers.teacherName,
           teacherNumber: dataTeachers.teacherNumber,
-          teacherDepartmentId: dataTeachers.teacherDepartmentDepartmentId,
+          teacherDepartmentName: (
+            await this.departmentService.findById(
+              dataTeachers.teacherDepartmentDepartmentId,
+            )
+          ).departmentName,
           haveClass: haveClass,
           class: dataClass,
         }

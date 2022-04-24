@@ -30,7 +30,8 @@ export class AdminService {
   public async getListStudent() {
     const dataStudent = await this.usersService.getListByRole(Role.Student)
     const dataMonitor = await this.usersService.getListByRole(Role.Monitor)
-    console.log(dataStudent)
+    console.log('dataStudent', dataStudent)
+    console.log('dataMonitor', dataMonitor)
     return dataStudent
   }
   public async getListTeacher() {

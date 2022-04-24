@@ -1,8 +1,7 @@
 import { ApiHideProperty, ApiProperty, OmitType } from '@nestjs/swagger'
 import { Exclude } from 'class-transformer'
 import { IsBoolean } from 'class-validator'
-import { IsEnum, IsNumber, IsString } from 'src/decorators/validators'
-import { Role } from 'src/modules/users/users.enum'
+import { IsNumber, IsString } from 'src/decorators/validators'
 
 export class TeacherResponse {
   @ApiProperty()

@@ -11,7 +11,7 @@ import { DetailUsersService } from '../detail-users/detail-users.service'
 import { TimeService } from '../time/time.service'
 import { Role } from '../users/users.enum'
 import { UsersService } from '../users/users.service'
-import { CreateMarkDto } from './dto/create-mark-dto'
+import { CreateMarkDto, CreateMarkMonitorDto } from './dto/create-mark-dto'
 import { MarkDetail } from './entity/mark-detail.entity'
 import { Mark } from './entity/mark.entity'
 
@@ -89,9 +89,11 @@ export class MarkService {
       await Promise.all(
         dto.markDetail.map(async (mark) => {
           const findData = await this.markRepository.findOne(createMark.markId)
+          const findDetailUserId = await this.detailUsersService.findById(id)
           const findDetail = await this.markDetailRepository.findOne({
             pointId: mark.pointId,
             mark: findData,
+            detailUser: findDetailUserId,
           })
           if (!findDetail) {
             const findDetailUserId = await this.detailUsersService.findById(id)
@@ -119,9 +121,11 @@ export class MarkService {
     } else {
       await Promise.all(
         dto.markDetail.map(async (mark) => {
+          const findDetailUserId = await this.detailUsersService.findById(id)
           const findDetail = await this.markDetailRepository.findOne({
             pointId: mark.pointId,
             mark: findData,
+            detailUser: findDetailUserId,
           })
           if (!findDetail) {
             const findDetailUserId = await this.detailUsersService.findById(id)
@@ -138,6 +142,106 @@ export class MarkService {
           } else {
             const newDetail = findDetail
             newDetail.studentScore = mark.studentScore
+            const createMarkDetail = await this.markDetailRepository.save({
+              ...findDetail,
+              ...newDetail,
+            })
+            dataResponse.push(createMarkDetail)
+          }
+        }),
+      )
+    }
+    return dataResponse
+  }
+
+  async createMarkMonitor(
+    id: number,
+    studentId: number,
+    dto: CreateMarkMonitorDto,
+  ) {
+    const getTimeActiveData = await this.timeService.findActive()
+    const data = await this.detailUsersService.findById(studentId)
+    const classId = data.usersClassClassId
+    const classData = await this.classService.find(classId)
+    const findData = await this.markRepository.findOne({
+      class: classData,
+      startYear: getTimeActiveData.startYear,
+      endYear: getTimeActiveData.endYear,
+      semester: getTimeActiveData.semester,
+    })
+    const dataResponse = []
+    if (!findData) {
+      const newMark = {
+        class: classData,
+        startYear: getTimeActiveData.startYear,
+        endYear: getTimeActiveData.endYear,
+        semester: getTimeActiveData.semester,
+      }
+      const createMark = await this.markRepository.save(newMark)
+      await Promise.all(
+        dto.markDetail.map(async (mark) => {
+          const findData = await this.markRepository.findOne(createMark.markId)
+          const findDetailUserId = await this.detailUsersService.findById(
+            studentId,
+          )
+          const findDetail = await this.markDetailRepository.findOne({
+            pointId: mark.pointId,
+            mark: findData,
+            detailUser: findDetailUserId,
+          })
+          if (!findDetail) {
+            const findDetailUserId = await this.detailUsersService.findById(
+              studentId,
+            )
+            const newMarkDetail = {
+              detailUser: findDetailUserId,
+              mark: findData,
+              pointId: mark.pointId,
+              monitorScore: mark.monitorScore,
+            }
+            const createMarkDetail = await this.markDetailRepository.save(
+              newMarkDetail,
+            )
+            dataResponse.push(createMarkDetail)
+          } else {
+            const newDetail = findDetail
+            newDetail.monitorScore = mark.monitorScore
+            const createMarkDetail = await this.markDetailRepository.save({
+              ...findDetail,
+              ...newDetail,
+            })
+            dataResponse.push(createMarkDetail)
+          }
+        }),
+      )
+    } else {
+      await Promise.all(
+        dto.markDetail.map(async (mark) => {
+          const findDetailUserId = await this.detailUsersService.findById(
+            studentId,
+          )
+          const findDetail = await this.markDetailRepository.findOne({
+            pointId: mark.pointId,
+            mark: findData,
+            detailUser: findDetailUserId,
+          })
+          if (!findDetail) {
+            const findDetailUserId = await this.detailUsersService.findById(
+              studentId,
+            )
+            const newMarkDetail = {
+              detailUser: findDetailUserId,
+              mark: findData,
+              pointId: mark.pointId,
+              monitorScore: mark.monitorScore,
+            }
+            const createMarkDetail = await this.markDetailRepository.save(
+              newMarkDetail,
+            )
+            dataResponse.push(createMarkDetail)
+          } else {
+            const newDetail = findDetail
+            newDetail.monitorScore = mark.monitorScore
             const createMarkDetail = await this.markDetailRepository.save({
               ...findDetail,
               ...newDetail,

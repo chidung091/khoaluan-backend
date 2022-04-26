@@ -55,6 +55,14 @@ export class ClassService {
     return data.className
   }
 
+  public async find(id: number) {
+    const data = await this.classRepository.findOne(id)
+    if (!data) {
+      throw new NotFoundException('NOT_FOUND_CLASS')
+    }
+    return data
+  }
+
   public async createClass(dto: CreateClassDto) {
     const getActiveTime = await this.timeService.findActive()
 

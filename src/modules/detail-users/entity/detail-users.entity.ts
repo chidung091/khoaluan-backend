@@ -1,4 +1,5 @@
 import { Class } from 'src/modules/class/entity/class.entity'
+import { MarkDetail } from 'src/modules/mark/entity/mark-detail.entity'
 import {
   Entity,
   Column,
@@ -9,6 +10,7 @@ import {
   JoinColumn,
   ManyToOne,
   RelationId,
+  OneToMany,
 } from 'typeorm'
 import { Users } from '../../users/entity/users.entity'
 
@@ -39,6 +41,9 @@ export class DetailUsers {
 
   @RelationId((cla: DetailUsers) => cla.users)
   usersUserID: number
+
+  @OneToMany(() => MarkDetail, (project) => project.detailUser)
+  markDetail: MarkDetail[]
 
   @CreateDateColumn({
     type: 'timestamp',

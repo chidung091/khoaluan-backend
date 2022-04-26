@@ -39,6 +39,10 @@ export class DetailUsersService {
       .getOne()
   }
 
+  public async findId(id: number): Promise<DetailUsers> {
+    return this.detailUsersRepository.findOne(id)
+  }
+
   public async findByClassId(id: number): Promise<DetailUsers[]> {
     return this.detailUsersRepository
       .createQueryBuilder('detail_users')

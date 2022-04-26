@@ -1,9 +1,15 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { ClassService } from '../class/class.service'
 import { DetailUsersService } from '../detail-users/detail-users.service'
 import { TimeService } from '../time/time.service'
+import { Role } from '../users/users.enum'
 import { UsersService } from '../users/users.service'
 import { CreateMarkDto } from './dto/create-mark-dto'
 import { MarkDetail } from './entity/mark-detail.entity'
@@ -25,6 +31,40 @@ export class MarkService {
     @Inject(forwardRef(() => TimeService))
     private timeService: TimeService,
   ) {}
+
+  async getMark(id: number, role: Role, classId: number) {
+    const getTimeActiveData = await this.timeService.findActive()
+    if (role === Role.Teacher) {
+      const classData = await this.classService.find(classId)
+      const findData = await this.markRepository.findOne({
+        class: classData,
+        startYear: getTimeActiveData.startYear,
+        endYear: getTimeActiveData.endYear,
+        semester: getTimeActiveData.semester,
+      })
+
+      if (!findData) {
+        throw new BadRequestException(`Can't find`)
+      }
+
+      return findData
+    }
+    const data = await this.detailUsersService.findById(id)
+    const newClassId = data.usersClassClassId
+    const classData = await this.classService.find(newClassId)
+    const findData = await this.markRepository.findOne({
+      class: classData,
+      startYear: getTimeActiveData.startYear,
+      endYear: getTimeActiveData.endYear,
+      semester: getTimeActiveData.semester,
+    })
+
+    if (!findData) {
+      throw new BadRequestException(`Can't find`)
+    }
+
+    return findData
+  }
 
   async createMarkStudent(id: number, dto: CreateMarkDto) {
     const getTimeActiveData = await this.timeService.findActive()
@@ -98,7 +138,6 @@ export class MarkService {
           } else {
             const newDetail = findDetail
             newDetail.studentScore = mark.studentScore
-            console.log(newDetail)
             const createMarkDetail = await this.markDetailRepository.save({
               ...findDetail,
               ...newDetail,

@@ -43,6 +43,45 @@ export class MarkController {
     )
   }
 
+  @Get('/get-mark/:markId')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Department)
+  @ApiOperation({ summary: 'Lấy chi tiết danh sách điểm của lớp theo mã điểm' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  async getMarkDetail(@Req() req, @Param('markId') markId: number) {
+    return await this.markService.getDetailMark(markId)
+  }
+
+  @Get('/approved-mark/:markId')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Department)
+  @ApiOperation({ summary: 'Phê duyệt danh sách điểm của lớp theo mã điểm' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  async approvedMarkDetail(@Req() req, @Param('markId') markId: number) {
+    return await this.markService.approveMark(markId)
+  }
+
+  @Get('/list-class-department')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Department)
+  @ApiOperation({ summary: 'Lấy danh sách điểm của lớp của sinh viên' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  async getMarkDepartment(@Req() req) {
+    return await this.markService.getListMarkDepartment(req.user.userID)
+  }
+
   @Post()
   @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)

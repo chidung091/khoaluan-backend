@@ -17,9 +17,9 @@ import { DetailUsersMonitorResponseDto } from './dto/detail-users-monitor.respon
 import { CreateDetailUsersDto } from './dto/detail-users.dto'
 import { DetailUsers } from './entity/detail-users.entity'
 import * as xlsx from 'xlsx'
-import { WorkBook, WorkSheet } from 'xlsx'
-import { ReadStream } from 'typeorm/platform/PlatformTools'
-import fileToArrayBuffer from 'file-to-array-buffer'
+import { WorkSheet } from 'xlsx'
+import { CreateUsersDto } from '../users/dto/create-users.dto'
+import { DepartmentService } from '../department/department.service'
 @Injectable()
 export class DetailUsersService {
   constructor(
@@ -32,6 +32,8 @@ export class DetailUsersService {
     private timeService: TimeService,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
+    @Inject(forwardRef(() => DepartmentService))
+    private departmentSerivce: DepartmentService,
   ) {}
 
   public async findById(id: number): Promise<DetailUsers> {
@@ -207,12 +209,35 @@ export class DetailUsersService {
     const newFile = xlsx.readFile(file.path)
     const sheet: WorkSheet = newFile.Sheets[newFile.SheetNames[0]]
     const range = xlsx.utils.decode_range(sheet['!ref'])
-    console.log(sheet)
-    console.log(range)
-    for (let R = range.s.r; R <= range.e.r; ++R) {
-      const data = sheet[xlsx.utils.encode_cell({ c: 0, r: R })]?.v
-      console.log(data)
+    for (let R = range.s.r; R < range.e.r; ++R) {
+      const userID = sheet[xlsx.utils.encode_cell({ c: 0, r: R + 1 })]?.v
+      const name = sheet[xlsx.utils.encode_cell({ c: 1, r: R + 1 })]?.v
+      const birthDate = sheet[xlsx.utils.encode_cell({ c: 2, r: R + 1 })]?.v
+      const myArray =
+        birthDate.split('/', 3)[0] +
+        birthDate.split('/', 3)[1] +
+        birthDate.split('/', 3)[2]
+      const newUser: CreateUsersDto = {
+        userID: userID,
+        password: myArray,
+        email: myArray + userID + '@gmail.com',
+      }
+      const createUser = await this.userService.createUser(newUser)
+      const d = new Date(
+        birthDate.split('/', 3)[2],
+        birthDate.split('/', 3)[1] - 1,
+        parseInt(birthDate.split('/', 3)[0]) + 1,
+        0,
+        0,
+        0,
+      )
+      const newDetailUser = {
+        name: name,
+        birthDate: d,
+        users: createUser,
+      }
+      await this.detailUsersRepository.save(newDetailUser)
     }
-    return file
+    return 'success'
   }
 }

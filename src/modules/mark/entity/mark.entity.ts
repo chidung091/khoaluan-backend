@@ -10,6 +10,7 @@ import {
   RelationId,
   OneToMany,
 } from 'typeorm'
+import { Status } from '../mark.enum'
 import { MarkDetail } from './mark-detail.entity'
 
 @Entity()
@@ -32,6 +33,9 @@ export class Mark {
 
   @Column()
   endYear: number
+
+  @Column({ type: 'enum', enum: Status })
+  status: Status
 
   @OneToMany(() => MarkDetail, (project) => project.mark)
   markDetail: MarkDetail[]

@@ -7,13 +7,16 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { ClassService } from '../class/class.service'
+import { DepartmentService } from '../department/department.service'
 import { DetailUsersService } from '../detail-users/detail-users.service'
+import { TeachersService } from '../teachers/teachers.service'
 import { TimeService } from '../time/time.service'
 import { Role } from '../users/users.enum'
 import { UsersService } from '../users/users.service'
 import { CreateMarkDto, CreateMarkMonitorDto } from './dto/create-mark-dto'
 import { MarkDetail } from './entity/mark-detail.entity'
 import { Mark } from './entity/mark.entity'
+import { Status } from './mark.enum'
 
 @Injectable()
 export class MarkService {
@@ -26,12 +29,126 @@ export class MarkService {
     private detailUsersService: DetailUsersService,
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
+    @Inject(forwardRef(() => TeachersService))
+    private teachersService: TeachersService,
     @Inject(forwardRef(() => ClassService))
     private classService: ClassService,
     @Inject(forwardRef(() => TimeService))
     private timeService: TimeService,
+    @Inject(forwardRef(() => DepartmentService))
+    private departmentService: DepartmentService,
   ) {}
 
+  async getListMarkDepartment(id: number) {
+    const getListClass = await this.classService.findAllClassByDepartmemt(id)
+    const getTimeActiveData = await this.timeService.findActive()
+    const dataResponse = []
+    await Promise.all(
+      getListClass.map(async (singleClass) => {
+        const classData = await this.classService.find(singleClass.classId)
+        const findData = await this.markRepository.findOne({
+          class: classData,
+          startYear: getTimeActiveData.startYear,
+          endYear: getTimeActiveData.endYear,
+          semester: getTimeActiveData.semester,
+        })
+        const dataDetailUsers = await this.detailUsersService.findByClassId(
+          singleClass.classId,
+        )
+        if (findData) {
+          const data = {
+            classId: singleClass.classId,
+            className: singleClass.className,
+            markId: findData.markId ?? 0,
+            teacherName: await (
+              await this.teachersService.findById(singleClass.headMasterId)
+            ).teacherName,
+            totalStudent: dataDetailUsers.length,
+            startYear: getTimeActiveData.startYear,
+            endYear: getTimeActiveData.endYear,
+            semester: getTimeActiveData.semester,
+            status: findData.status,
+          }
+          dataResponse.push(data)
+        } else {
+          const data = {
+            classId: singleClass.classId,
+            className: singleClass.className,
+            markId: 0,
+            totalStudent: 0,
+            startYear: getTimeActiveData.startYear,
+            endYear: getTimeActiveData.endYear,
+            semester: getTimeActiveData.semester,
+            status: 0,
+          }
+          dataResponse.push(data)
+        }
+      }),
+    )
+    return dataResponse
+  }
+
+  async getDetailMark(markId: number) {
+    const findData = await this.markRepository.findOne(markId)
+    const dataDetailUsers = await this.detailUsersService.findByClassId(
+      findData.classClassId,
+    )
+    const dataResponse = []
+    await Promise.all(
+      dataDetailUsers.map(async (single) => {
+        const findDetail = await this.markDetailRepository.find({
+          detailUser: single,
+          mark: findData,
+        })
+        if (findDetail.length > 0) {
+          let totalStudentScore = 0
+          let totalMonitorScore = 0
+          let totalTeacherScore = 0
+
+          await Promise.all(
+            findDetail.map((singleDetail) => {
+              totalStudentScore += singleDetail.studentScore
+              totalMonitorScore += singleDetail.monitorScore
+              totalTeacherScore += singleDetail.teacherScore
+            }),
+          )
+          const data = {
+            userID: single.usersUserID,
+            name: single.name,
+            haveMark: true,
+            totalStudentScore: totalStudentScore,
+            totalMonitorScore: totalMonitorScore,
+            totalTeacherScore: totalTeacherScore,
+          }
+          dataResponse.push(data)
+        } else {
+          const newData = {
+            userID: single.usersUserID,
+            name: single.name,
+            haveMark: false,
+            totalStudentScore: 0,
+            totalMonitorScore: 0,
+            totalTeacherScore: 0,
+          }
+          dataResponse.push(newData)
+        }
+      }),
+    )
+    return dataResponse
+  }
+
+  async approveMark(markId: number) {
+    const findData = await this.markRepository.findOne(markId)
+    if (findData.status === Status.Approved) {
+      throw new BadRequestException('You approved this!')
+    }
+    const newData = findData
+    newData.status = Status.Approved
+    return this.markRepository.save({
+      ...findData,
+      ...newData,
+    })
+  }
   async getMark(id: number, role: Role, classId: number) {
     const getTimeActiveData = await this.timeService.findActive()
     if (role === Role.Teacher) {

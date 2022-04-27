@@ -3,7 +3,9 @@ import { ClientsModule, Transport } from '@nestjs/microservices'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { BE_AUTH_SERVICE } from 'src/config/secrets'
 import { ClassModule } from '../class/class.module'
+import { DepartmentModule } from '../department/department.module'
 import { DetailUsersModule } from '../detail-users/detail-users.module'
+import { TeachersModule } from '../teachers/teachers.module'
 import { TimeModule } from '../time/time.module'
 import { UsersModule } from '../users/users.module'
 import { MarkDetail } from './entity/mark-detail.entity'
@@ -19,6 +21,8 @@ import { MarkService } from './mark.service'
     forwardRef(() => UsersModule),
     forwardRef(() => ClassModule),
     forwardRef(() => TimeModule),
+    forwardRef(() => DepartmentModule),
+    forwardRef(() => TeachersModule),
     ClientsModule.register([
       {
         name: 'AUTH_CLIENT',

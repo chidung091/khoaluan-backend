@@ -154,9 +154,7 @@ export class DetailUsersController {
     }),
   )
   async uploadAvatar(@UploadedFile() file) {
-    console.log(file)
-    const data = await this.detailUsersService.importExcelFile(file)
-    return `${SERVER_URL}${file.path}`
+    return await this.detailUsersService.importExcelFile(file)
   }
 
   @MessagePattern({ role: 'detail-user', cmd: 'get-by-id' })

@@ -10,7 +10,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import * as bcrypt from 'bcryptjs'
-import { CreateUsersDto } from './dto/create-users.dto'
+import {
+  CreateUsersDto,
+  CreateUsersWithOutEmailDto,
+} from './dto/create-users.dto'
 import { Users } from './entity/users.entity'
 import { Role, Status } from './users.enum'
 import { ResetPassword } from './entity/reset-password.entity'
@@ -31,6 +34,20 @@ export class UsersService {
   ) {}
 
   public async createUser(dto: CreateUsersDto): Promise<Users> {
+    const hash = await bcrypt.hash(dto.password, 10)
+    dto.password = hash
+    const users = {
+      ...dto,
+      role: Role.Student,
+    }
+    return this.usersRepository.save(users)
+  }
+
+  public async createUserWithOutEmail(
+    dto: CreateUsersWithOutEmailDto,
+  ): Promise<Users> {
+    const hash = await bcrypt.hash(dto.password, 10)
+    dto.password = hash
     const users = {
       ...dto,
       role: Role.Student,

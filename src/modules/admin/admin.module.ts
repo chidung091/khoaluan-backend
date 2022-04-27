@@ -7,6 +7,7 @@ import { BE2_SERVICE, BE_AUTH_SERVICE } from 'src/config/secrets'
 import { ClassModule } from '../class/class.module'
 import { TeachersModule } from '../teachers/teachers.module'
 import { DepartmentModule } from '../department/department.module'
+import { DetailUsersModule } from '../detail-users/detail-users.module'
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DepartmentModule } from '../department/department.module'
     ClassModule,
     TeachersModule,
     forwardRef(() => DepartmentModule),
+    forwardRef(() => DetailUsersModule),
     ClientsModule.register([
       {
         name: 'RATING_SERVICE',

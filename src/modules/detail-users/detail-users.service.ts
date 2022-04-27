@@ -16,7 +16,10 @@ import { DetailUsersHeadMasterResponseDto } from './dto/detail-users-headmaster.
 import { DetailUsersMonitorResponseDto } from './dto/detail-users-monitor.response.dto'
 import { CreateDetailUsersDto } from './dto/detail-users.dto'
 import { DetailUsers } from './entity/detail-users.entity'
-
+import * as xlsx from 'xlsx'
+import { WorkBook, WorkSheet } from 'xlsx'
+import { ReadStream } from 'typeorm/platform/PlatformTools'
+import fileToArrayBuffer from 'file-to-array-buffer'
 @Injectable()
 export class DetailUsersService {
   constructor(
@@ -198,5 +201,14 @@ export class DetailUsersService {
     }
     dataResponse.push(dataRes)
     return dataResponse
+  }
+
+  async importExcelFile(file: Express.Multer.File) {
+    const newFile = xlsx.readFile(file.path)
+    const sheet: WorkSheet = newFile.Sheets[newFile.SheetNames[0]]
+    const range = xlsx.utils.decode_range(sheet['!ref'])
+    console.log(sheet)
+    console.log(range)
+    return file
   }
 }

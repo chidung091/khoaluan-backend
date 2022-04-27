@@ -6,9 +6,12 @@ import {
   Post,
   Put,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
+import { FileInterceptor } from '@nestjs/platform-express'
 import {
   ApiOperation,
   ApiResponse,
@@ -16,6 +19,9 @@ import {
   ApiBearerAuth,
   ApiBody,
 } from '@nestjs/swagger'
+import { diskStorage } from 'multer'
+import { extname } from 'path'
+import { SERVER_URL } from 'src/config/secrets'
 import { Roles } from 'src/decorators/roles.decorator'
 import { RoleGuard } from 'src/guards/role.guard'
 import { AuthGuard } from '../../guards/auth.guard'
@@ -130,6 +136,27 @@ export class DetailUsersController {
   @ApiResponse({ status: 201, description: 'Success', type: CreateUsersDto })
   async updateDetailUser(@Req() req, @Body() dto: CreateDetailUsersDto) {
     return await this.detailUsersService.update(req.user.userID, dto)
+  }
+
+  @Post('/upload')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './excels',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('')
+          return cb(null, `${randomName}${extname(file.originalname)}`)
+        },
+      }),
+    }),
+  )
+  async uploadAvatar(@UploadedFile() file) {
+    console.log(file)
+    const data = await this.detailUsersService.importExcelFile(file)
+    return `${SERVER_URL}${file.path}`
   }
 
   @MessagePattern({ role: 'detail-user', cmd: 'get-by-id' })

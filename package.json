@@ -49,6 +49,7 @@
     "cookie-parser": "^1.4.6",
     "date-fns": "^2.28.0",
     "dotenv": "^10.0.0",
+    "file-to-array-buffer": "^1.0.0",
     "handlebars": "^4.7.7",
     "jwt-decode": "^3.1.2",
     "mongoose": "^6.0.12",
@@ -67,6 +68,7 @@
     "typeorm": "^0.2.41",
     "uuid": "^8.3.2",
     "uuid-token-generator": "^1.0.0",
+    "xlsx": "^0.18.5",
     "yarn": "^1.22.17"
   },
   "devDependencies": {

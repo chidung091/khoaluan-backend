@@ -26,13 +26,13 @@ import {
 } from './dto/get-list-teacher.response.dto'
 import { getUserByRoleDto } from './dto/get-users-role.dto'
 
-@ApiBearerAuth()
 @ApiTags('admin')
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Post('/users')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Xem danh sách người dùng theo Role' })
@@ -43,6 +43,7 @@ export class AdminController {
   }
 
   @Get('/list-teacher')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Xem danh sách giáo viên chủ nhiệm' })
@@ -59,6 +60,7 @@ export class AdminController {
   }
 
   @Post('/create-teacher')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Xem danh sách giáo viên chủ nhiệm' })
@@ -72,6 +74,7 @@ export class AdminController {
   }
 
   @Post('/assign-department-teacher/:departmentId')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Gán giáo viên vào khoa' })

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common'
 import { ClassService } from '../class/class.service'
 import { DepartmentService } from '../department/department.service'
+import { DetailUsersService } from '../detail-users/detail-users.service'
 import { CreateTableTeacherDto } from '../teachers/dto/create-teacher.dto'
 import { TeachersService } from '../teachers/teachers.service'
 import { CreateUsersDto } from '../users/dto/create-users.dto'
@@ -21,6 +22,8 @@ export class AdminService {
     private readonly teacherService: TeachersService,
     @Inject(forwardRef(() => DepartmentService))
     private departmentService: DepartmentService,
+    @Inject(forwardRef(() => DetailUsersService))
+    private detailUsersService: DetailUsersService,
   ) {}
 
   public async getUserByRole(role: Role) {
@@ -30,9 +33,32 @@ export class AdminService {
   public async getListStudent() {
     const dataStudent = await this.usersService.getListByRole(Role.Student)
     const dataMonitor = await this.usersService.getListByRole(Role.Monitor)
-    console.log('dataStudent', dataStudent)
-    console.log('dataMonitor', dataMonitor)
-    return dataStudent
+    const dataQuery = []
+    const dataResponse = []
+    await Promise.all(
+      dataStudent.map(async (singleStudent) => {
+        dataQuery.push(singleStudent)
+      }),
+    )
+    await Promise.all(
+      dataMonitor.map(async (singleStudent) => {
+        dataQuery.push(singleStudent)
+      }),
+    )
+    await Promise.all(
+      dataQuery.map(async (single) => {
+        const dataRes = {
+          userID: single.userID,
+          name: (await this.detailUsersService.findById(single.userID)).name,
+          email: single.email,
+          role: single.role,
+          createdAt: single.createdAt,
+          updatedAt: single.updatedAt,
+        }
+        dataResponse.push(dataRes)
+      }),
+    )
+    return dataResponse
   }
   public async getListTeacher() {
     const dataTeacher = await this.usersService.getListByRole(Role.Teacher)

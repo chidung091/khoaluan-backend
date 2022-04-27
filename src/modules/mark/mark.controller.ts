@@ -26,7 +26,7 @@ import { MarkService } from './mark.service'
 export class MarkController {
   constructor(private readonly markService: MarkService) {}
 
-  @Get()
+  @Post('/get-mark')
   @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Student, Role.Monitor, Role.Teacher)

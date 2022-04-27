@@ -209,6 +209,10 @@ export class DetailUsersService {
     const range = xlsx.utils.decode_range(sheet['!ref'])
     console.log(sheet)
     console.log(range)
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+      const data = sheet[xlsx.utils.encode_cell({ c: 0, r: R })]?.v
+      console.log(data)
+    }
     return file
   }
 }

@@ -81,6 +81,7 @@ export class AdminService {
         const dataObject = {
           teacherId: dataTeachers.teacherId,
           userID: singleTeacher.userID,
+          email: singleTeacher.email,
           teacherName: dataTeachers.teacherName,
           teacherNumber: dataTeachers.teacherNumber,
           teacherDepartmentName: data.departmentName,

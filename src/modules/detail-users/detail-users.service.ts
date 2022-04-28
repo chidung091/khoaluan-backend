@@ -137,6 +137,24 @@ export class DetailUsersService {
     return 'Fail'
   }
 
+  public async updateClassForStudent(userId: number, classId: number) {
+    const data = await this.findById(userId)
+    if (!data || data.usersClassClassId) {
+      throw new BadRequestException(
+        'This student not available or already have classes!',
+      )
+    }
+    const dataClass = await this.classService.find(classId)
+    if (!dataClass) {
+      throw new BadRequestException('ClassId not available!')
+    }
+    const newData = data
+    newData.usersClass = dataClass
+    return this.detailUsersRepository.save({
+      ...data,
+      ...newData,
+    })
+  }
   public async findAllStudentByHeadMaster(classId: number, id: number) {
     const classNew = await this.classService.findAllClassByHeadMaster(id)
     const dataResponse: DetailUsersHeadMasterResponseDto[] = []

@@ -31,6 +31,7 @@ import { DetailUsersService } from './detail-users.service'
 import { DetailUsersMonitorResponseDto } from './dto/detail-users-monitor.response.dto'
 import { DetailUsersHeadMasterDto } from './dto/detail-users-search-headmaster.dto'
 import { CreateDetailUsersDto } from './dto/detail-users.dto'
+import { DetailUsersParamsDto } from './dto/detail-users.param.dto'
 
 @ApiBearerAuth()
 @ApiTags('detail-users')
@@ -91,6 +92,24 @@ export class DetailUsersController {
     return await this.detailUsersService.updateStudentToMonitor(
       classId,
       req.user.userID,
+    )
+  }
+
+  @Get('/department/:studentId/assign-class/:classId')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Department)
+  @ApiOperation({ summary: 'Assign new monitor for class' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    type: [DetailUsersMonitorResponseDto],
+  })
+  async assignStudentMonitor(
+    @Param() { studentId, classId }: DetailUsersParamsDto,
+  ) {
+    return await this.detailUsersService.updateClassForStudent(
+      studentId,
+      classId,
     )
   }
 

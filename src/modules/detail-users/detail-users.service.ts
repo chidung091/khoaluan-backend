@@ -14,7 +14,10 @@ import { UsersService } from '../users/users.service'
 import { Role } from './detail-users.enum'
 import { DetailUsersHeadMasterResponseDto } from './dto/detail-users-headmaster.response.dto'
 import { DetailUsersMonitorResponseDto } from './dto/detail-users-monitor.response.dto'
-import { CreateDetailUsersDto } from './dto/detail-users.dto'
+import {
+  CreateDetailUsersAdminDto,
+  CreateDetailUsersDto,
+} from './dto/detail-users.dto'
 import { DetailUsers } from './entity/detail-users.entity'
 import * as xlsx from 'xlsx'
 import { WorkSheet } from 'xlsx'
@@ -82,6 +85,28 @@ export class DetailUsersService {
     }
     if (dto.imageUrls) {
       newData.imageUrls = dto.imageUrls
+    }
+    if (dto.email) {
+      await this.userService.updateEmail(id, dto.email)
+    }
+    return this.detailUsersRepository.save({
+      ...oldData,
+      ...newData,
+    })
+  }
+
+  public async updateAdmin(
+    id: number,
+    dto: CreateDetailUsersAdminDto,
+  ): Promise<DetailUsers> {
+    const data = await this.findById(id)
+    const oldData = await this.detailUsersRepository.findOne(data.id)
+    const newData = oldData
+    if (dto.birthDate) {
+      newData.birthDate = dto.birthDate
+    }
+    if (dto.name) {
+      newData.name = dto.name
     }
     if (dto.email) {
       await this.userService.updateEmail(id, dto.email)

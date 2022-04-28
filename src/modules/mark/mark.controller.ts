@@ -17,7 +17,11 @@ import { Roles } from 'src/decorators/roles.decorator'
 import { AuthGuard } from 'src/guards/auth.guard'
 import { RoleGuard } from 'src/guards/role.guard'
 import { Role } from '../users/users.enum'
-import { CreateMarkDto, CreateMarkMonitorDto } from './dto/create-mark-dto'
+import {
+  CreateMarkDto,
+  CreateMarkMonitorDto,
+  CreateMarkTeacherDto,
+} from './dto/create-mark-dto'
 import { GetMarkDto } from './dto/get-mark.dto'
 import { MarkService } from './mark.service'
 
@@ -149,5 +153,24 @@ export class MarkController {
       studentId,
       dto,
     )
+  }
+
+  @Post('/teacher/:studentId')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Teacher)
+  @ApiOperation({
+    summary:
+      'Chấm điểm của giáo viên cho cá nhân thành viên hoặc bản thân lớp trưởng',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  async createMarkTeacher(
+    @Param('studentId') studentId: number,
+    @Body() dto: CreateMarkTeacherDto,
+  ) {
+    return await this.markService.createMarkTeacher(studentId, dto)
   }
 }

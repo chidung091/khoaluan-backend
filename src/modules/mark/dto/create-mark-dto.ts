@@ -20,6 +20,15 @@ export class UpdateMarkMonitorDetail {
   @IsNumber({ notEmpty: true })
   monitorScore: number
 }
+export class UpdateMarkTeacherDetail {
+  @ApiProperty()
+  @IsString({ notEmpty: true })
+  pointId: string
+
+  @ApiProperty()
+  @IsNumber({ notEmpty: true })
+  teacherScore: number
+}
 export class CreateMarkDto {
   @ApiPropertyOptional({
     type: [UpdateMarkDetail],
@@ -48,4 +57,19 @@ export class CreateMarkMonitorDto {
     minSize: 1,
   })
   markDetail: UpdateMarkMonitorDetail[]
+}
+
+export class CreateMarkTeacherDto {
+  @ApiPropertyOptional({
+    type: [UpdateMarkTeacherDetail],
+    description: 'UpdateMarkTeacherDetail',
+  })
+  @IsArray({
+    nestedType: UpdateMarkTeacherDetail,
+    nestedValidate: true,
+    notEmpty: true,
+    unique: [(o: UpdateMarkTeacherDetail) => o.pointId],
+    minSize: 1,
+  })
+  markDetail: UpdateMarkTeacherDetail[]
 }

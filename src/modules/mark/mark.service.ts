@@ -137,6 +137,53 @@ export class MarkService {
     return dataResponse
   }
 
+  async getDetailMarkPages(studentId: number, role: Role, classId: number) {
+    const getTimeActiveData = await this.timeService.findActive()
+    if (role === Role.Teacher) {
+      const classData = await this.classService.find(classId)
+      const findData = await this.markRepository.findOne({
+        class: classData,
+        startYear: getTimeActiveData.startYear,
+        endYear: getTimeActiveData.endYear,
+        semester: getTimeActiveData.semester,
+      })
+      const findDetailUser = await this.detailUsersService.findById(studentId)
+      if (!findData) {
+        throw new BadRequestException(`Can't find`)
+      }
+      const findDetail = await this.markDetailRepository.find({
+        mark: findData,
+        detailUser: findDetailUser,
+      })
+      if (!findDetail) {
+        throw new BadRequestException(`Chưa chấm điểm chi tiết`)
+      }
+      return findDetail
+    }
+    const data = await this.detailUsersService.findById(studentId)
+    const newClassId = data.usersClassClassId
+    const classData = await this.classService.find(newClassId)
+    const findData = await this.markRepository.findOne({
+      class: classData,
+      startYear: getTimeActiveData.startYear,
+      endYear: getTimeActiveData.endYear,
+      semester: getTimeActiveData.semester,
+    })
+
+    if (!findData) {
+      throw new BadRequestException(`Can't find`)
+    }
+
+    const findDetail = await this.markDetailRepository.find({
+      mark: findData,
+      detailUser: data,
+    })
+    if (!findDetail) {
+      throw new BadRequestException(`Chưa chấm điểm chi tiết`)
+    }
+    return findDetail
+  }
+
   async approveMark(markId: number) {
     const findData = await this.markRepository.findOne(markId)
     if (findData.status === Status.Approved) {

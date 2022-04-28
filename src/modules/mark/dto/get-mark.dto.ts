@@ -7,4 +7,9 @@ export class GetMarkDto {
   @IsOptional()
   @IsNumber({ notEmpty: true })
   classId: number
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber({ notEmpty: true })
+  studentId: number
 }

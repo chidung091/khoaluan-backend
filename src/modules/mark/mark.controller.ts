@@ -43,6 +43,30 @@ export class MarkController {
     )
   }
 
+  @Post('/get-detail-mark')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Student, Role.Monitor, Role.Teacher)
+  @ApiOperation({ summary: 'Lấy danh sách điểm chi tiết của sinh viên' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  async getDetailMarkPages(@Req() req, @Body() dto: GetMarkDto) {
+    if (req.user.role === Role.Teacher) {
+      return await this.markService.getDetailMarkPages(
+        dto.studentId,
+        req.user.role,
+        dto.classId,
+      )
+    }
+    return await this.markService.getDetailMarkPages(
+      req.user.userID,
+      req.user.role,
+      dto.classId,
+    )
+  }
+
   @Get('/get-mark/:markId')
   @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)

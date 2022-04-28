@@ -21,7 +21,6 @@ import {
 } from '@nestjs/swagger'
 import { diskStorage } from 'multer'
 import { extname } from 'path'
-import { SERVER_URL } from 'src/config/secrets'
 import { Roles } from 'src/decorators/roles.decorator'
 import { RoleGuard } from 'src/guards/role.guard'
 import { AuthGuard } from '../../guards/auth.guard'

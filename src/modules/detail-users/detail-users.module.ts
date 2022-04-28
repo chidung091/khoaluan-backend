@@ -9,7 +9,6 @@ import { ClassModule } from '../class/class.module'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { BE2_SERVICE, BE_AUTH_SERVICE } from 'src/config/secrets'
 import { TimeModule } from '../time/time.module'
-import { Mark } from '../mark/entity/mark.entity'
 import { MarkModule } from '../mark/mark.module'
 import { DepartmentModule } from '../department/department.module'
 

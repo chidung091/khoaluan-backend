@@ -20,6 +20,7 @@ import { AuthGuard } from '../../guards/auth.guard'
 import { Role } from '../users/users.enum'
 import { AdminService } from './admin.service'
 import { CreateTeacherDto } from './dto/create-teacher.dto'
+import { EditStudent } from './dto/edit-student.dto'
 import {
   CreateTeacherResponseDto,
   TeacherResponse,
@@ -71,6 +72,22 @@ export class AdminController {
   })
   async createTeacher(@Body() dto: CreateTeacherDto) {
     return this.adminService.createTeacher(dto)
+  }
+
+  @Post('/update-student/:studentId')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Cập nhật thông tin học sinh' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  async updateStudent(
+    @Param('studentId') studentId: number,
+    @Body() dto: EditStudent,
+  ) {
+    return this.adminService.editStudent(studentId, dto)
   }
 
   @Post('/assign-department-teacher/:departmentId')

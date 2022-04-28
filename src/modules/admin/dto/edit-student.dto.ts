@@ -3,38 +3,29 @@ import { Type } from 'class-transformer'
 import { IsDate, IsOptional } from 'class-validator'
 import { IsString } from 'src/decorators/validators'
 
-export class CreateDetailUsersDto {
+export class EditStudent {
   @ApiProperty()
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  birthDate: Date
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString({ notEmpty: false })
-  imageUrls: string
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString({ notEmpty: false })
-  email: string
-}
-
-export class CreateDetailUsersAdminDto {
-  @ApiProperty()
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  birthDate: Date
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString({ notEmpty: false })
+  @IsString({ notEmpty: true })
   name: string
 
   @ApiProperty()
   @IsOptional()
-  @IsString({ notEmpty: false })
+  @IsString({ notEmpty: true })
   email: string
+
+  @ApiProperty()
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  birthDate: Date
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString({ notEmpty: true })
+  password: string
+
+  @ApiProperty()
+  @IsOptional()
+  classId: number
 }

@@ -13,7 +13,6 @@ import { UsersService } from '../users/users.service'
 import { CreateTableTeacherDto } from './dto/create-teacher.dto'
 import { Teachers } from './entity/teachers.entity'
 import * as xlsx from 'xlsx'
-import { CreateTeacherDto } from '../admin/dto/create-teacher.dto'
 @Injectable()
 export class TeachersService {
   constructor(

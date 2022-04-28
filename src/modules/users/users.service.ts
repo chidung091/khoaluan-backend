@@ -222,6 +222,19 @@ export class UsersService {
     })
   }
 
+  public async updatePassword(userId: number, password: string) {
+    const data = await this.usersRepository.findOne(userId)
+    if (!data) {
+      throw new NotFoundException('User not found')
+    }
+    const dataNew = data
+    dataNew.password = await bcrypt.hash(password, 10)
+    return this.usersRepository.save({
+      ...data,
+      ...dataNew,
+    })
+  }
+
   public async updateRole(userId: number, role: Role) {
     console.log(userId)
     const data = await this.usersRepository.findOne(userId)

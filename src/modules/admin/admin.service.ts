@@ -13,6 +13,7 @@ import { CreateUsersDto } from '../users/dto/create-users.dto'
 import { Role } from '../users/users.enum'
 import { UsersService } from '../users/users.service'
 import { CreateTeacherDto } from './dto/create-teacher.dto'
+import { EditStudent } from './dto/edit-student.dto'
 
 @Injectable()
 export class AdminService {
@@ -126,5 +127,23 @@ export class AdminService {
 
   public async assignDepartmentTeacher(userID: number, departmentId: number) {
     return this.teacherService.assignDepartment(userID, departmentId)
+  }
+
+  public async editStudent(userID: number, dto: EditStudent) {
+    if (dto.birthDate || dto.name) {
+      const dtoDetailUser = {
+        birthDate: dto.birthDate,
+        name: dto.name,
+        email: dto.email,
+      }
+      await this.detailUsersService.updateAdmin(userID, dtoDetailUser)
+    }
+    if (dto.email) {
+      await this.usersService.updateEmail(userID, dto.email)
+    }
+    if (dto.password) {
+      await this.usersService.updatePassword(userID, dto.password)
+    }
+    return 'success'
   }
 }

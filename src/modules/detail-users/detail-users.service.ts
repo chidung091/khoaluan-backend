@@ -23,6 +23,7 @@ import * as xlsx from 'xlsx'
 import { WorkSheet } from 'xlsx'
 import { CreateUsersDto } from '../users/dto/create-users.dto'
 import { DepartmentService } from '../department/department.service'
+import { MarkService } from '../mark/mark.service'
 @Injectable()
 export class DetailUsersService {
   constructor(
@@ -37,6 +38,8 @@ export class DetailUsersService {
     private userService: UsersService,
     @Inject(forwardRef(() => DepartmentService))
     private departmentSerivce: DepartmentService,
+    @Inject(forwardRef(() => MarkService))
+    private markService: MarkService,
   ) {}
 
   public async findById(id: number): Promise<DetailUsers> {
@@ -130,11 +133,14 @@ export class DetailUsersService {
     const dataResponse: DetailUsersMonitorResponseDto[] = []
     await Promise.all(
       data.map(async (arrayItem) => {
+        const point = await this.markService.calculationScore(
+          arrayItem.usersUserID,
+        )
         const dataRes: DetailUsersMonitorResponseDto = {
           userID: arrayItem.usersUserID,
           name: arrayItem.name,
-          studentScore: 0,
-          monitorScore: 0,
+          studentScore: point.totalStudentScore,
+          monitorScore: point.totalMonitorScore,
         }
         dataResponse.push(dataRes)
       }),
@@ -189,13 +195,16 @@ export class DetailUsersService {
         await Promise.all(
           dataStudent.map(async (item) => {
             const role = await this.userService.getRole(item.usersUserID)
+            const point = await this.markService.calculationScore(
+              item.usersUserID,
+            )
             const dataRes: DetailUsersHeadMasterResponseDto = {
               userID: item.usersUserID,
               name: await (await this.findById(item.usersUserID)).name,
               className: await this.classService.findName(arrayItem.classId),
-              studentScore: 0,
-              monitorScore: 0,
-              teacherScore: 0,
+              studentScore: point.totalStudentScore,
+              monitorScore: point.totalMonitorScore,
+              teacherScore: point.totalTeacherScore,
               role: role,
             }
             dataResponse.push(dataRes)
@@ -216,13 +225,14 @@ export class DetailUsersService {
     }
     const dataResponse: DetailUsersHeadMasterResponseDto[] = []
     const role = await this.userService.getRole(data.usersUserID)
+    const point = await this.markService.calculationScore(data.usersUserID)
     const dataRes: DetailUsersHeadMasterResponseDto = {
       userID: data.usersUserID,
       name: data.name,
       className: data.usersClass.className,
-      studentScore: 0,
-      monitorScore: 0,
-      teacherScore: 0,
+      studentScore: point.totalStudentScore,
+      monitorScore: point.totalMonitorScore,
+      teacherScore: point.totalTeacherScore,
       role: role,
     }
     dataResponse.push(dataRes)
@@ -237,12 +247,13 @@ export class DetailUsersService {
     if (!data) {
       throw new BadRequestException(`can't find data`)
     }
+    const point = await this.markService.calculationScore(data.usersUserID)
     const dataResponse: DetailUsersMonitorResponseDto[] = []
     const dataRes: DetailUsersMonitorResponseDto = {
       userID: data.usersUserID,
       name: data.name,
-      studentScore: 0,
-      monitorScore: 0,
+      studentScore: point.totalStudentScore,
+      monitorScore: point.totalMonitorScore,
     }
     dataResponse.push(dataRes)
     return dataResponse

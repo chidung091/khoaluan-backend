@@ -141,6 +141,46 @@ export class MarkService {
     return dataResponse
   }
 
+  async calculationScore(studentId: number) {
+    const getTimeActiveData = await this.timeService.findActive()
+    const data = await this.detailUsersService.findById(studentId)
+    const classData = await this.classService.find(data.usersClassClassId)
+    const findData = await this.markRepository.findOne({
+      class: classData,
+      startYear: getTimeActiveData.startYear,
+      endYear: getTimeActiveData.endYear,
+      semester: getTimeActiveData.semester,
+    })
+    const findDetailMark = await this.markDetailRepository.find({
+      mark: findData,
+      detailUser: data,
+    })
+    let totalStudentScore = 0
+    let totalMonitorScore = 0
+    let totalTeacherScore = 0
+    if (!findDetailMark) {
+      const res = {
+        totalStudentScore: 0,
+        totalMonitorScore: 0,
+        totalTeacherScore: 0,
+      }
+      return res
+    }
+    await Promise.all(
+      findDetailMark.map(async (single) => {
+        totalStudentScore += single.studentScore
+        totalMonitorScore += single.monitorScore
+        totalTeacherScore += single.teacherScore
+      }),
+    )
+    const res = {
+      totalStudentScore: totalStudentScore,
+      totalMonitorScore: totalMonitorScore,
+      totalTeacherScore: totalTeacherScore,
+    }
+    return res
+  }
+
   async getDetailMarkPages(studentId: number, role: Role, classId: number) {
     const getTimeActiveData = await this.timeService.findActive()
     if (role === Role.Teacher) {

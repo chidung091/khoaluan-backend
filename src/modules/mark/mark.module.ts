@@ -36,5 +36,6 @@ import { MarkService } from './mark.service'
   ],
   controllers: [MarkController],
   providers: [MarkService],
+  exports: [MarkService],
 })
 export class MarkModule {}

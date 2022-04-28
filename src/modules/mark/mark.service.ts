@@ -162,7 +162,19 @@ export class MarkService {
       if (!findDetail) {
         throw new BadRequestException(`Chưa chấm điểm chi tiết`)
       }
-      return findDetail
+      const className = await this.classService.findName(
+        findDetailUser.usersClassClassId,
+      )
+      const dataResponse = {
+        name: findDetailUser.name,
+        birthDate: findDetailUser.birthDate,
+        semester: findData.semester,
+        startYear: findData.startYear,
+        endYear: findData.endYear,
+        className: className,
+        detailMark: findDetail,
+      }
+      return dataResponse
     }
     const data = await this.detailUsersService.findById(studentId)
     const newClassId = data.usersClassClassId
@@ -185,7 +197,17 @@ export class MarkService {
     if (!findDetail) {
       throw new BadRequestException(`Chưa chấm điểm chi tiết`)
     }
-    return findDetail
+    const className = await this.classService.findName(data.usersClassClassId)
+    const dataResponse = {
+      name: data.name,
+      birthDate: data.birthDate,
+      semester: findData.semester,
+      startYear: findData.startYear,
+      endYear: findData.endYear,
+      className: className,
+      detailMark: findDetail,
+    }
+    return dataResponse
   }
 
   async approveMark(markId: number) {

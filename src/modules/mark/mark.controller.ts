@@ -65,8 +65,15 @@ export class MarkController {
       )
     }
     if (req.user.role === Role.Monitor) {
+      if (dto.studentId) {
+        return await this.markService.getDetailMarkPages(
+          dto.studentId,
+          req.user.role,
+          dto.classId,
+        )
+      }
       return await this.markService.getDetailMarkPages(
-        dto.studentId,
+        req.user.userID,
         req.user.role,
         dto.classId,
       )
